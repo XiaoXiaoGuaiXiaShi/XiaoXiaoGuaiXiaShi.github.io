@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>DQQ&#39;s blog</title>
+  
+  
+  <link href="https://xiaoxiaoguaixiashi.github.io.git/atom.xml" rel="self"/>
+  
+  <link href="https://xiaoxiaoguaixiashi.github.io.git/"/>
+  <updated>2018-09-22T05:11:08.006Z</updated>
+  <id>https://xiaoxiaoguaixiashi.github.io.git/</id>
+  
+  <author>
+    <name>DQQ</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Ubuntu16.04.4 本地提权漏洞（CVE-2017-16995）</title>
+    <link href="https://xiaoxiaoguaixiashi.github.io.git/2018/03/22/cve-2017-16995/"/>
+    <id>https://xiaoxiaoguaixiashi.github.io.git/2018/03/22/cve-2017-16995/</id>
+    <published>2018-03-22T12:37:31.000Z</published>
+    <updated>2018-09-22T05:11:08.006Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h4><p>Ubuntu 16.04.1~16.04.4<br>Linux Kernel Version 4.14-4.4 （主要影响 Debian 和 Ubuntu 发行版，Redhat 和 CentOS 不受影响。）</p><span id="more"></span><h4 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h4><p>该漏洞存在于调用eBPF bpf(2)的Linux内核系统中，当用户提供恶意BPF程序使eBPF验证器模块产生计算错误，导致任意内存读写问题， 低权限用户可使用此漏洞获得管理权限。</p><blockquote><p>eBPF - extended Berkeley Packet Filter<br>  简单理解就是用于过滤网络数据包。</p></blockquote><p>EXP下载链接：<a href="https://www.hackersb.cn/usr/uploads/2018/03/1930063493.zip">https://www.hackersb.cn/usr/uploads/2018/03/1930063493.zip</a></p><h4 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p>本来刚开始打算虚拟机复现的，结果安装完发现下的是内核版本为GNU&#x2F;Linux 4.13.0-37-generic x86_64的Ubuntu 16.04，就很难受😣。<br>于是利用i春秋的实验平台复现了一下，结果如下：<br><img src="/assets/blog/1.png" alt="Alt text"></p><h4 id="修复方案"><a href="#修复方案" class="headerlink" title="修复方案"></a>修复方案</h4><p>Ubuntu 官网暂时没有提供修复方案，可以在评估风险后通过修改内核参数限制普通用户使用 bpf(2) 系统调用来临时修复此漏洞。<br><img src="/assets/blog/2.png" alt="Alt text"></p><blockquote><p>echo 1 &gt; &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;unprivileged_bpf_disabled</p></blockquote><p>彻底根治方案：更新内核。</p><p>参考链接：<br><a href="https://www.ibm.com/developerworks/cn/linux/l-lo-eBPF-history/index.html">eBPF 简史</a><br><a href="https://mp.weixin.qq.com/s/51txDsanj-uSqXdm5GZuEA">i春秋实验</a><br><a href="http://www.yunweipai.com/archives/25298.html">http://www.yunweipai.com/archives/25298.html</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;h4 id=&quot;影响范围&quot;&gt;&lt;a href=&quot;#影响范围&quot; class=&quot;headerlink&quot; title=&quot;影响范围&quot;&gt;&lt;/a&gt;影响范围&lt;/h4&gt;&lt;p&gt;Ubuntu 16.04.1~16.04.4&lt;br&gt;Linux Kernel Version 4.14-4.4 （主要影响 Debian 和 Ubuntu 发行版，Redhat 和 CentOS 不受影响。）&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="study" scheme="https://xiaoxiaoguaixiashi.github.io.git/categories/study/"/>
+    
+    
+    <category term="CVE" scheme="https://xiaoxiaoguaixiashi.github.io.git/tags/CVE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>微信是怎样发送消息的</title>
+    <link href="https://xiaoxiaoguaixiashi.github.io.git/2017/12/28/weixin/"/>
+    <id>https://xiaoxiaoguaixiashi.github.io.git/2017/12/28/weixin/</id>
+    <published>2017-12-28T12:37:31.000Z</published>
+    <updated>2018-09-22T05:11:08.009Z</updated>
+    
+    <content type="html"><![CDATA[<p>从课上提出这个问题开始，就一直想着找个时间总结一下，顺便梳理一下思路。0.0奈何拖延症晚期，直到考试前一天的今晚，在大家相互询问的害怕和后一天考试的焦虑种种消极因素的影响下，终于开始整理了。废话不多说，进入正题。</p><p>从自己手机微信对话框中输入消息，到对方手机接收并显示出消息内容，在这个只有几秒钟的过程中，很多硬件和软件都在各自岗位上相互配合完成了一系列的工作。接下来从计算机网络的五层体系结构分别做一个简单的分析。</p><span id="more"></span><h2 id="物理层"><a href="#物理层" class="headerlink" title="物理层"></a>物理层</h2><p><img src="/assets/blog/4.png" alt="Alt text">  （图来自课上赵老师）</p><p> 这边首先对数据流量和wifi二者的区别做一个简单介绍：<br>    1、数据流量是通过基站，如果基站覆盖范围大的话，信号接收当然会比wifi好。<br>    2、而wifi是通过wifi接入点（或者简单点理解就是无线路由器），再通过学校交换机，再通过中继器，再通过运营商的路由器。</p><p>手机将文字、图片、语音等数据通过电磁波为载体，在空气中经过上图传播流程后，通过运营商给你接通的讯道传输到对方手机。当手机接收到信号之后再把信号转换，从而实现双方的消息传递。</p><p><em>并没有学过通信原理，这边很多概念也都一知半解，只能浅显地给出自己的一些理解，大佬们轻喷@_@</em></p><h2 id="数据链路层、网络层"><a href="#数据链路层、网络层" class="headerlink" title="数据链路层、网络层"></a>数据链路层、网络层</h2><p>其实在上一段的图中已经提及了，这边也不进一步分析了。</p><h2 id="运输层"><a href="#运输层" class="headerlink" title="运输层"></a>运输层</h2><p><img src="/assets/blog/5.png" alt="Alt text">    （图来自网络）<br>这边即时通讯关于UDP和TCP的使用区别还是很重要的一个点，也许很多人一听到这个就会下意识地背出“tcp是面向连接的可靠交付，而udp是无连接的不可靠交付”，深入下去其实并不简单。<br>微信既有UDP也有TCP！</p><blockquote><p>UDP协议是无连接方式的协议，它的效率高，速度快，占资源少，但是其传输机制为不可靠传送，必须依靠辅助的算法来完成传输控制。微信采用的通信协议以UDP为主，辅以TCP协议。由于微信的服务器设计容量是海量级的应用，一台服务器要同时容纳十几万的并发连接，因此服务器端只有采用UDP协议与客户端进行通讯才能保证这种超大规模的服务。<br>微信客户端之间的消息传送也采用了UDP模式，因为国内的网络环境非常复杂，而且很多用户采用的方式是通过代理服务器共享一条线路上网的方式，在这些复杂的情况下，客户端之间能彼此建立起来TCP连接的概率较小，严重影响传送信息的效率。而UDP包能够穿透大部分的代理服务器，因此微信选择了UDP作为客户之间的主要通信协议。</p></blockquote><h2 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h2><p>应用层这边还是直接看操作吧～</p><p>尝试用wireshark抓包（由于mac微信无法设置代理，也有可能是我还不太熟悉…..这边是对网页版微信的一个抓包）：<br><img src="/assets/blog/6.png" alt="Alt text"><br>先是建立TCP连接：如图前面是TCP的三次握手：<br>    首先客户端向服务器发送标志为SYN的连接请求，数据包标号Seq&#x3D;0；  <br>    收到请求后，服务器向客户端发送了带有SYN和ACK的确认应答，发送序号Seq&#x3D;0，确认序号ACK&#x3D;1；接下来，客户端向服务器发送确认应答，Seq&#x3D;1，ACK&#x3D;1. 连接建立完成。 <br>后面紧跟着的是HTTP数据包，数据最后一行为空行，表明数据已经传送完毕，如下图所示：<br><img src="/assets/blog/7.png" alt="Alt text"><br>发现他的数据通信是http协议的，可是发送数据和返回数据都是加密过的（逆向表哥可以试试跟踪处理过程，web渣表示无能为力）</p><p>除了wireshark，还尝试过进xp系统用fiddler抓包，这里其实抓到的数据更多，但是。。。。。我忘记截图了，就很尴尬😳。后面也试过用神器burpsuite，但可能代理这边一直无法设置，也没有做进一步的改包实验。结合之前看到的一篇论文，这边稍微对抓包后的结果总结一下：<br>1、微信通过内置浏览器和服务器交互数据。 <br>微信在应用层使用HTTP协议传输数据。微信点击网址链接，会跳转到浏览器模式，打开该消息对应的网页。而且用wireshark抓包发现微信的通信都是用HTTP协议收发数据的，内嵌浏览器为网络通信接口。（之前课上和老师争论过关于http和https协议的应用问题，现在想想有点傻，哈哈哈）<br>2、微信的数据用SSL加密传输。</p><p>接下来从其他方面做一个分析（为了凑出老师说好的十个要点我也是很拼了！！！求表扬求发糖&#x3D;-&#x3D;）<br>1、C&#x2F;S通信模式<br><img src="/assets/blog/8.png" alt="Alt text"><br>（图来自书《网络是怎样连接的》，强烈安利）<br>2、p2p对等模式<br>整个网络结构中不存在中心节点（或中心服务器）。在P2P结构中，每一个节点（peer）大都同时具有信息消费者、信息提供者和信息通讯等三方面的功能。<br>3、微信技术是基于即时通信技术原理的一种<br>当前使用的IM系统大都组合使用了C&#x2F;S和P2P模式。在登录IM进行身份认证阶段是工作在C&#x2F;S方式,随后如果客户端之间可以直接通信则使用P2P方式工作，否则以C&#x2F;S方式通过IM服务器通信。<br>4、手机分为电源部分，逻辑部分，射频部分，输入输出部分<br>    首先输入输出部分指的是触摸屏，麦克风，听筒等（手机触摸屏分为两种：电阻屏和电容屏。电阻触屏：需用压力使屏幕各层发生接触。电容触屏：来自带电的手指表层最细微的接触也能激活屏幕下方的电容感应系统。）<br>    逻辑部分是指CPU，字库，暂存等，作用就是控制手机的各项操作。<br>    射频部分就是信号部分，有功放，滤波，中频IC等，管接收和发射，<br>    电源是各元器件的供电。<br>发信息时，按字后根据触摸点在屏幕的坐标位置进行识别，再将字在此时作为输出设备的屏幕上显示。</p><p>计算机组成原理学得比较浅，很多东西的理解都还浮在表面，还是希望自己能再多花时间去学习。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;从课上提出这个问题开始，就一直想着找个时间总结一下，顺便梳理一下思路。0.0奈何拖延症晚期，直到考试前一天的今晚，在大家相互询问的害怕和后一天考试的焦虑种种消极因素的影响下，终于开始整理了。废话不多说，进入正题。&lt;/p&gt;
+&lt;p&gt;从自己手机微信对话框中输入消息，到对方手机接收并显示出消息内容，在这个只有几秒钟的过程中，很多硬件和软件都在各自岗位上相互配合完成了一系列的工作。接下来从计算机网络的五层体系结构分别做一个简单的分析。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="study" scheme="https://xiaoxiaoguaixiashi.github.io.git/categories/study/"/>
+    
+    
+    <category term="course" scheme="https://xiaoxiaoguaixiashi.github.io.git/tags/course/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>记第一次线下赛</title>
+    <link href="https://xiaoxiaoguaixiashi.github.io.git/2017/12/11/AWD-1/"/>
+    <id>https://xiaoxiaoguaixiashi.github.io.git/2017/12/11/AWD-1/</id>
+    <published>2017-12-11T06:25:08.000Z</published>
+    <updated>2018-09-22T05:11:08.010Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天第一次打AWD比赛，全靠大佬carry，学到很多姿势（没错，包括腰酸脖子疼！），挺有意思的，稍微记录总结一下。</p><h2 id="AWD"><a href="#AWD" class="headerlink" title="AWD"></a>AWD</h2><p>attack with defence赛制，也就是ctf线下赛。<br>比赛形式：一般就是一个ssh对应一个web服务，然后flag五分钟一轮，各队一般都有自己的初始分数，flag被拿会被拿走flag的队伍均分，主办方会对每个队伍的服务进行check，check不过就扣分，扣除的分值由服务check正常的队伍均分。</p><span id="more"></span><h2 id="比赛环境-网络拓扑图"><a href="#比赛环境-网络拓扑图" class="headerlink" title="比赛环境 网络拓扑图"></a>比赛环境 网络拓扑图</h2><p>计网没学好的后遗症，哇，刚开始一直分不清网段，不知道对手在哪，一脸懵逼简直生无可恋。所以，要分清区段和端口！！！<br>    <img src="/assets/blog/3.png" alt="Alt text"></p><blockquote><p>维护的时候需要连接到本队 GameBox 所在网段上，根据主办方提供的 CTF 账号与密码登录。而与其他队伍的 GameBox 交互时则需要连接到对应的网段里与漏洞程序进行交互。提交 flag 则需要到指定的答题平台上提交。</p></blockquote><h2 id="答案提交形式"><a href="#答案提交形式" class="headerlink" title="答案提交形式"></a>答案提交形式</h2><ol><li>攻破其他选手的GameBox,并在GameBox上寻找flag文件；</li><li>在答题页面上登陆后提交flag；</li><li>比赛提供自动提交flag的接口，接口地址需要使用post方式提交，并需要两个参数：answer和token<br><em>这次比赛就是靠大佬写的脚本批量提交flag，排名蹭蹭往上涨～</em></li><li>flag每轮次刷新。</li></ol><h2 id="“涨姿势”"><a href="#“涨姿势”" class="headerlink" title="“涨姿势”"></a>“涨姿势”</h2><p>来来来，敲黑板，划重点！</p><h3 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h3><blockquote><p>比赛开始后第一时间备份服务器中web目录下的文件(&#x2F;var&#x2F;www&#x2F;html)，这是自我审计的基础，也是防止服务器在比赛中出现异常的情况下可以立即恢复到初始状态的先决条件。有的比赛可以提供3次左右的恢复初始设置的机会，有的比赛不提供，所以备份十分重要。<br>    可以用ssh user@hostname命令，也可以用图形化工具xshell等。</p></blockquote><h3 id="找主机"><a href="#找主机" class="headerlink" title="找主机"></a>找主机</h3><pre><code> ‘’nmap –sn 192.168.71.0/24‘’</code></pre><h3 id="预留后门"><a href="#预留后门" class="headerlink" title="预留后门"></a>预留后门</h3><p>将服务器中web目录下载到本地，利用D盾扫描，一般就可以发现预留后门。<br>发现后门后，第一时间删除或者注释掉，同时利用这个漏洞发起第一波攻击。</p><h3 id="挂waf"><a href="#挂waf" class="headerlink" title="挂waf"></a>挂waf</h3><p>没看清大佬操作，以后再补0.0</p><h3 id="口令问题"><a href="#口令问题" class="headerlink" title="口令问题"></a>口令问题</h3><blockquote><p>弱口令的问题几乎是必考，比赛开始后，如果发现每个队伍的SSH账号密码都是一样的（某次比赛中都是phpcms、wordpress），需要立即修改口令，如果被其他队伍改了那就gg了。Web后台很有可能存在弱口令，一般都是admin&#x2F;admin,admin&#x2F;123456,test&#x2F;test等等，同样需要立即修改，也可以修改其他队伍的后台口令，为本队所用，说不定可以利用后台getshell，比如十分常见的wordpress。</p></blockquote><h3 id="文件监控-日志分析"><a href="#文件监控-日志分析" class="headerlink" title="文件监控 日志分析"></a>文件监控 日志分析</h3><p> 除了感知攻击，嘿嘿嘿，最重要的是“抄作业”。<br> 然后一定注意权限！</p><h3 id="审计"><a href="#审计" class="headerlink" title="审计"></a>审计</h3><p>常见的cms漏洞要熟悉，然后一般漏洞包括SQL注入、文件包含、文件上传等等。</p><h3 id="关注-Gamebox-状态"><a href="#关注-Gamebox-状态" class="headerlink" title="关注 Gamebox 状态"></a>关注 Gamebox 状态</h3><p>一定要注意关注本队Gamebox状态，后面因为服务器down掉了超级多分，就很蓝瘦。。。</p><h2 id="相关链接"><a href="#相关链接" class="headerlink" title="相关链接"></a>相关链接</h2><p><a href="https://ctf-wiki.github.io/ctf-wiki/introduction/experience.html">https://ctf-wiki.github.io/ctf-wiki/introduction/experience.html</a><br><a href="http://bobao.360.cn/ctf/detail/169.html">http://bobao.360.cn/ctf/detail/169.html</a><br><a href="https://www.t00ls.net/articles-40843.html">https://www.t00ls.net/articles-40843.html</a><br><a href="http://mp.weixin.qq.com/s/q6xwmkADGnbHJQRbPblaHg">http://mp.weixin.qq.com/s/q6xwmkADGnbHJQRbPblaHg</a></p><h2 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h2><p>挺开心的一天下来，虽然刚开始因为没带mac的网线转换头沮丧了很久，但是江sir人真的超好啊（没错，就是我队大佬！），不嫌弃拖后腿的我这个小辣鸡，还陪着我到处跑去买转换头。全程看大佬操作，还超nice的讲解，这波很值啊！明天把环境本地复现再玩玩，具体的比赛“姿势”回头补篇笔记，嘿嘿嘿。然后代码审计、脚本编写很很很重要，一些常见的题目漏洞类型要好好掌握（sql、文件包含、各种rce、文件上传），就酱紫～还是希望能趁着大三上学期再多玩玩多学点，怀挺！</p><p>2017-12-08</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;今天第一次打AWD比赛，全靠大佬carry，学到很多姿势（没错，包括腰酸脖子疼！），挺有意思的，稍微记录总结一下。&lt;/p&gt;
+&lt;h2 id=&quot;AWD&quot;&gt;&lt;a href=&quot;#AWD&quot; class=&quot;headerlink&quot; title=&quot;AWD&quot;&gt;&lt;/a&gt;AWD&lt;/h2&gt;&lt;p&gt;attack with defence赛制，也就是ctf线下赛。&lt;br&gt;比赛形式：一般就是一个ssh对应一个web服务，然后flag五分钟一轮，各队一般都有自己的初始分数，flag被拿会被拿走flag的队伍均分，主办方会对每个队伍的服务进行check，check不过就扣分，扣除的分值由服务check正常的队伍均分。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="life" scheme="https://xiaoxiaoguaixiashi.github.io.git/categories/life/"/>
+    
+    
+    <category term="config" scheme="https://xiaoxiaoguaixiashi.github.io.git/tags/config/"/>
+    
+  </entry>
+  
+</feed>
