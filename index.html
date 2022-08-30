@@ -184,20 +184,38 @@
 <li>1）直接修改内核代码——&gt;内核版本更新满，每次功能更新都需要重新编译打包内核代码；<br></li>
 <li>2）开发新的可即时加载的内核模块，用户可以在运行时加载到Linux内核中进而扩展内核功能——&gt;内核模块需要跟着内核版本的更新进行调整，此外还存在让内核crash的风险。<br><br>BPF通过BPF验证器、JIT编译器和用户空间可编程三个特性实现了内核开发的需求：<br></li>
 <li>1）强安全：BPF验证器（verifier）会检查将要运行到内核空间的程序的每一行是否安全可靠，如果检查不通过，它将拒绝这个程序被加载到内核中去，从而保证内核本身不会崩溃<em>（这是不同于开发内核模块的）</em>。<br></li>
-<li>2）高性能：Just-In-Time编译器保证了程序本地运行的高性能。<br></li>
+<li>2）高性能：Just-In-Time（指令即时翻译）编译器保证了程序本地运行的高性能。<br></li>
 <li>3）持续交付：可以在不影响系统运行的情况下，实时在线地替换这些运行在Linux内核中的eBPF程序。<br></li>
 </ul>
-<h3 id="1-3-eBPF架构"><a href="#1-3-eBPF架构" class="headerlink" title="1.3 eBPF架构"></a>1.3 eBPF架构</h3><p><img src="/assets/blog/eBPF-1.jpg" alt="Alt text">    （图来自<a target="_blank" rel="noopener" href="https://www.ebpf.top/post/ebpf_intro/%EF%BC%89">https://www.ebpf.top/post/ebpf_intro/）</a><br>eBPF用户空间程序和内核中的BPF字节码交互流程如下：<br></p>
+<h3 id="1-3-eBPF架构"><a href="#1-3-eBPF架构" class="headerlink" title="1.3 eBPF架构"></a>1.3 eBPF架构</h3><p><img src="/assets/blog/eBPF-1.jpg" alt="Alt text"><br></p>
+<center>图来自https://www.ebpf.top/post/ebpf_intro/</center>
+
+<p>eBPF用户空间程序和内核中的BPF字节码交互流程如下：<br></p>
 <ul>
-<li>1）使用LLVM或GCC工具将</li>
+<li>1）用户自定义程序，使用LLVM或GCC工具将编写的BPF代码程序编译成BPF字节码。<br></li>
+<li>2）字节码被装载到内核VM中，基于类RISC指令的VM运行在内核空间。<br></li>
+<li>3）其中，字节码通过BPF Verifier确保内核安全。<br></li>
+<li>4）验证后的字节码通过BPF JIT机制转成内核可执行的本地指令运行。<br><br>
+上述流程中涉及到的程序的装载过程具体是：通过**bpf()系统调用**将eBPF程序装载到内核中，其中包含多种bpf命令，用于用户空间与内核VM交互。<br>
+![Alt text](/assets/blog/eBPF-2.jpg)<br>
+<br>
+上述流程中涉及到的程序验证具体是：保证程序的安全执行，不破坏内核。主要验证程序的权限、程序不能对内核有损害、程序能够结束（循坏有限）等。<br>
+<br>
+eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行。预定义的钩子包括系统调用、函数入口/出口、内核跟踪点、网络事件和其他钩子。<br>
+![Alt text](/assets/blog/eBPF-3.jpg)<br>
+<center>图来自[陈鹏飞：eBPF概念及在可观测性、网络、安全和优化领域的应用](https://www.bilibili.com/video/BV1PF411V7Lj?share_source=copy_web&vd_source=28532461e369234a7808585e999e9e49)</center>
+<br>
+内核中运行的BPF字节码程序可以使用两种方式将测量数据回传至用户空间：<br></li>
+<li>1）eBPF maps，被设计成 key&#x2F;value 的形式，能够在用户态程序与内核态eBPF程序之间进行双向通信。<br></li>
+<li>2）perf-event 用于将内核采集的事件实时发送至用户空间，用户空间程序实时读取分析。<br></li>
 </ul>
-<h2 id="二、eBPF编程"><a href="#二、eBPF编程" class="headerlink" title="二、eBPF编程"></a>二、eBPF编程</h2><h2 id="三、eBPF应用——SaBPF"><a href="#三、eBPF应用——SaBPF" class="headerlink" title="三、eBPF应用——SaBPF"></a>三、eBPF应用——SaBPF</h2><h2 id="四、eBPF应用相关论文"><a href="#四、eBPF应用相关论文" class="headerlink" title="四、eBPF应用相关论文"></a>四、eBPF应用相关论文</h2><h2 id="推荐学习路径"><a href="#推荐学习路径" class="headerlink" title="推荐学习路径"></a>推荐学习路径</h2><p>参考狄卫华老师推荐的<a href="">eBPF学习路径</a>，结合自身的学习情况，整理了一些对个人帮助较大的博客和资料，按照不同阶段的学习需求总结如下：</p>
-<h3 id="1-了解eBPF发展背景和相关概念"><a href="#1-了解eBPF发展背景和相关概念" class="headerlink" title="1. 了解eBPF发展背景和相关概念"></a>1. 了解eBPF发展背景和相关概念</h3><ul>
+<h2 id="二、eBPF编程"><a href="#二、eBPF编程" class="headerlink" title="二、eBPF编程"></a>二、eBPF编程</h2><h2 id="三、eBPF应用——SaBPF"><a href="#三、eBPF应用——SaBPF" class="headerlink" title="三、eBPF应用——SaBPF"></a>三、eBPF应用——SaBPF</h2><h2 id="四、eBPF应用相关论文"><a href="#四、eBPF应用相关论文" class="headerlink" title="四、eBPF应用相关论文"></a>四、eBPF应用相关论文</h2><h2 id="五、推荐学习路径"><a href="#五、推荐学习路径" class="headerlink" title="五、推荐学习路径"></a>五、推荐学习路径</h2><p>参考狄卫华老师推荐的<a href="">eBPF学习路径</a>，结合自身的学习情况，整理了一些对个人帮助较大的博客和资料，按照不同阶段的学习需求总结如下：</p>
+<h3 id="5-1-了解eBPF发展背景和相关概念"><a href="#5-1-了解eBPF发展背景和相关概念" class="headerlink" title="5.1 了解eBPF发展背景和相关概念"></a>5.1 了解eBPF发展背景和相关概念</h3><ul>
 <li><a target="_blank" rel="noopener" href="https://www.ebpf.top/post/ebpf_intro/">博客文章——eBPF技术简介</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1PF411V7Lj?share_source=copy_web&vd_source=28532461e369234a7808585e999e9e49">B站视频——陈鹏飞：eBPF概念及在可观测性、网络、安全和优化领域的应用</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=uBqRv8bDroc&t=2s">Youtube视频——Liz Rice：A Beginner’s Guide to eBPF</a></li>
 </ul>
-<h3 id="2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"><a href="#2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解" class="headerlink" title="2. 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"></a>2. 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</h3><ul>
+<h3 id="5-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"><a href="#5-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解" class="headerlink" title="5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"></a>5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</h3><ul>
 <li><a href=""></a></li>
 </ul>
 
@@ -628,11 +646,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">course</a>
+                <a href="javascript:void(0)" class="js-tag color5">eBPF</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">eBPF</a>
+                <a href="javascript:void(0)" class="js-tag color2">course</a>
               </li>
             
             <div class="clearfix"></div>
