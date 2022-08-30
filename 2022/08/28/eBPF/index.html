@@ -17,7 +17,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-1.jpg">
 <meta property="article:published_time" content="2022-08-28T12:37:31.000Z">
-<meta property="article:modified_time" content="2022-08-30T08:46:47.586Z">
+<meta property="article:modified_time" content="2022-08-30T09:34:29.603Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
@@ -190,7 +190,8 @@
 <li>2）高性能：Just-In-Time（指令即时翻译）编译器保证了程序本地运行的高性能。<br></li>
 <li>3）持续交付：可以在不影响系统运行的情况下，实时在线地替换这些运行在Linux内核中的eBPF程序。<br></li>
 </ul>
-<h3 id="1-3-eBPF架构"><a href="#1-3-eBPF架构" class="headerlink" title="1.3 eBPF架构"></a>1.3 eBPF架构</h3><p><img src="/assets/blog/eBPF-1.jpg" alt="Alt text"><br></p>
+<h3 id="1-3-eBPF架构"><a href="#1-3-eBPF架构" class="headerlink" title="1.3 eBPF架构"></a>1.3 eBPF架构</h3><p>介绍：用户把eBPF程序编译为eBPF指令，然后通过bpf()系统调用将eBPF指令加载到内核的特定挂载点，由特定的事件来触发eBPF指令的执行。在挂载eBPF指令时内核会进行充分验证，避免eBPF代码影响内核的安全和稳定性。另外内核也会进行JIT编译，把eBPF指令翻译为本地指令，减少性能开销。<br></p>
+<p><img src="/assets/blog/eBPF-1.jpg" alt="Alt text"><br></p>
 <center>图来自https://www.ebpf.top/post/ebpf_intro/</center>
 
 <p>eBPF用户空间程序和内核中的BPF字节码交互流程如下：<br></p>
@@ -220,6 +221,13 @@ eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行�
 </ul>
 <h3 id="5-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"><a href="#5-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解" class="headerlink" title="5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"></a>5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</h3><ul>
 <li><a href=""></a></li>
+</ul>
+<h2 id="六、国内eBPF实践团队"><a href="#六、国内eBPF实践团队" class="headerlink" title="六、国内eBPF实践团队"></a>六、国内eBPF实践团队</h2><ul>
+<li>字节跳动STE团队</li>
+<li>阿里云荣旸</li>
+<li>腾讯云TKE团队</li>
+<li>eBay IE Cloud团队</li>
+<li>网易杭研轻舟云原生</li>
 </ul>
 
       
@@ -344,7 +352,7 @@ eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行�
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81eBPF%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">一、eBPF概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81BPF"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 为什么需要BPF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-BPF%E5%86%85%E6%A0%B8%E7%BC%96%E7%A8%8B%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 BPF内核编程的好处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-eBPF%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 eBPF架构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81eBPF%E7%BC%96%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">二、eBPF编程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81eBPF%E5%BA%94%E7%94%A8%E2%80%94%E2%80%94SaBPF"><span class="toc-number">3.</span> <span class="toc-text">三、eBPF应用——SaBPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81eBPF%E5%BA%94%E7%94%A8%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87"><span class="toc-number">4.</span> <span class="toc-text">四、eBPF应用相关论文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%8E%A8%E8%8D%90%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84"><span class="toc-number">5.</span> <span class="toc-text">五、推荐学习路径</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%BA%86%E8%A7%A3eBPF%E5%8F%91%E5%B1%95%E8%83%8C%E6%99%AF%E5%92%8C%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 了解eBPF发展背景和相关概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%88%9D%E6%AD%A5%E6%8E%A2%E7%B4%A2eBPF%E7%BC%96%E7%A8%8B%E5%B9%B6%E7%BB%93%E5%90%88%E5%AE%9E%E8%B7%B5%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%B7%B1%E5%8C%96%E5%AF%B9eBPF%E7%9B%B8%E5%85%B3%E5%8A%9F%E8%83%BD%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81eBPF%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">一、eBPF概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81BPF"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 为什么需要BPF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-BPF%E5%86%85%E6%A0%B8%E7%BC%96%E7%A8%8B%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 BPF内核编程的好处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-eBPF%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 eBPF架构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81eBPF%E7%BC%96%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">二、eBPF编程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81eBPF%E5%BA%94%E7%94%A8%E2%80%94%E2%80%94SaBPF"><span class="toc-number">3.</span> <span class="toc-text">三、eBPF应用——SaBPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81eBPF%E5%BA%94%E7%94%A8%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87"><span class="toc-number">4.</span> <span class="toc-text">四、eBPF应用相关论文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%8E%A8%E8%8D%90%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84"><span class="toc-number">5.</span> <span class="toc-text">五、推荐学习路径</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%BA%86%E8%A7%A3eBPF%E5%8F%91%E5%B1%95%E8%83%8C%E6%99%AF%E5%92%8C%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 了解eBPF发展背景和相关概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%88%9D%E6%AD%A5%E6%8E%A2%E7%B4%A2eBPF%E7%BC%96%E7%A8%8B%E5%B9%B6%E7%BB%93%E5%90%88%E5%AE%9E%E8%B7%B5%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%B7%B1%E5%8C%96%E5%AF%B9eBPF%E7%9B%B8%E5%85%B3%E5%8A%9F%E8%83%BD%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%9B%BD%E5%86%85eBPF%E5%AE%9E%E8%B7%B5%E5%9B%A2%E9%98%9F"><span class="toc-number">6.</span> <span class="toc-text">六、国内eBPF实践团队</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -472,10 +480,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">config</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
@@ -485,6 +489,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">course</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">config</a>
               </li>
             
             <div class="clearfix"></div>

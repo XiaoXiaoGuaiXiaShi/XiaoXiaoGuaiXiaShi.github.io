@@ -47,13 +47,6 @@
 
   
   <url>
-    <loc>https://xiaoxiaoguaixiashi.github.io.git/tags/config/</loc>
-    <lastmod>2022-08-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://xiaoxiaoguaixiashi.github.io.git/tags/CVE/</loc>
     <lastmod>2022-08-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -74,17 +67,24 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://xiaoxiaoguaixiashi.github.io.git/tags/config/</loc>
+    <lastmod>2022-08-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
-    <loc>https://xiaoxiaoguaixiashi.github.io.git/categories/life/</loc>
+    <loc>https://xiaoxiaoguaixiashi.github.io.git/categories/study/</loc>
     <lastmod>2022-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://xiaoxiaoguaixiashi.github.io.git/categories/study/</loc>
+    <loc>https://xiaoxiaoguaixiashi.github.io.git/categories/life/</loc>
     <lastmod>2022-08-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

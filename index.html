@@ -187,7 +187,8 @@
 <li>2）高性能：Just-In-Time（指令即时翻译）编译器保证了程序本地运行的高性能。<br></li>
 <li>3）持续交付：可以在不影响系统运行的情况下，实时在线地替换这些运行在Linux内核中的eBPF程序。<br></li>
 </ul>
-<h3 id="1-3-eBPF架构"><a href="#1-3-eBPF架构" class="headerlink" title="1.3 eBPF架构"></a>1.3 eBPF架构</h3><p><img src="/assets/blog/eBPF-1.jpg" alt="Alt text"><br></p>
+<h3 id="1-3-eBPF架构"><a href="#1-3-eBPF架构" class="headerlink" title="1.3 eBPF架构"></a>1.3 eBPF架构</h3><p>介绍：用户把eBPF程序编译为eBPF指令，然后通过bpf()系统调用将eBPF指令加载到内核的特定挂载点，由特定的事件来触发eBPF指令的执行。在挂载eBPF指令时内核会进行充分验证，避免eBPF代码影响内核的安全和稳定性。另外内核也会进行JIT编译，把eBPF指令翻译为本地指令，减少性能开销。<br></p>
+<p><img src="/assets/blog/eBPF-1.jpg" alt="Alt text"><br></p>
 <center>图来自https://www.ebpf.top/post/ebpf_intro/</center>
 
 <p>eBPF用户空间程序和内核中的BPF字节码交互流程如下：<br></p>
@@ -217,6 +218,13 @@ eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行�
 </ul>
 <h3 id="5-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"><a href="#5-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解" class="headerlink" title="5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"></a>5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</h3><ul>
 <li><a href=""></a></li>
+</ul>
+<h2 id="六、国内eBPF实践团队"><a href="#六、国内eBPF实践团队" class="headerlink" title="六、国内eBPF实践团队"></a>六、国内eBPF实践团队</h2><ul>
+<li>字节跳动STE团队</li>
+<li>阿里云荣旸</li>
+<li>腾讯云TKE团队</li>
+<li>eBay IE Cloud团队</li>
+<li>网易杭研轻舟云原生</li>
 </ul>
 
       
@@ -638,10 +646,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">config</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
@@ -651,6 +655,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">course</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">config</a>
               </li>
             
             <div class="clearfix"></div>
