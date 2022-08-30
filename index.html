@@ -152,6 +152,118 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-eBPF" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/08/28/eBPF/">eBPF初步学习</a>
+    </h1>
+  
+
+        
+        <a href="/2022/08/28/eBPF/" class="archive-article-date">
+  	<time datetime="2022-08-28T12:37:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-08-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;2014年，eBPF扩展到用户空间，吸引了越来越多的关注。当前，eBPF相关的知名的开源项目包括Facebook的高性能4层负载均衡器Katran，具备API感知和安全高效的容器网络方案Cilium等。eBPF让<strong>操作系统内核可编程化</strong>，成为云原生时代软件系统的一把利刃。</p>
+<h2 id="一、eBPF概念"><a href="#一、eBPF概念" class="headerlink" title="一、eBPF概念"></a>一、eBPF概念</h2><ul>
+<li>BPF：Berkeley Packet Filter，伯克利包过滤器。<br></li>
+<li>发明之初被称为cBPF（classic BPF），是一款网络过滤神器，衍生工具有tcpdump等。<br></li>
+<li>发展演进成一套通用执行引擎eBPF（extended Berkeley Packet Filter），不再仅仅是网络分析，还可以基于eBPF开发性能分析、系统追踪、网络优化等多种类型的工具和平台。<br></li>
+</ul>
+<h3 id="1-1-为什么需要BPF"><a href="#1-1-为什么需要BPF" class="headerlink" title="1.1 为什么需要BPF"></a>1.1 为什么需要BPF</h3><p>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;过去的程序为了分析只在内核空间运行的数据，必须将数据从内核空间复制到用户空间的内存中去，并进行上下文切换。而这与直接在内核空间分析数据相比，产生了巨大的性能开销。随着近年来网络速度和流量的快速增长（音频、视频流媒体数据），在用户空间监控分析那么多的流量数据已经不可行了，一种在内核空间执行高效安全的程序的机制BPF就应运而生了。<br><br>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;1992年，《The BSD Packet Filter: A New Architecture for User-level Packet Capture》论文中第一次提出BPF技术，文中描述了如何在Unix内核实现网络数据包过滤，比当时的数据包过滤技术快20倍。<br></p>
+<h3 id="1-2-BPF内核编程的好处"><a href="#1-2-BPF内核编程的好处" class="headerlink" title="1.2 BPF内核编程的好处"></a>1.2 BPF内核编程的好处</h3><p>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;传统的Linux内核开发需要实现强安全、高性能和持续交付。<br><br>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;现有的方案存在以下问题：<br></p>
+<ul>
+<li>1）直接修改内核代码——&gt;内核版本更新满，每次功能更新都需要重新编译打包内核代码；<br></li>
+<li>2）开发新的可即时加载的内核模块，用户可以在运行时加载到Linux内核中进而扩展内核功能——&gt;内核模块需要跟着内核版本的更新进行调整，此外还存在让内核crash的风险。<br><br>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;BPF通过BPF验证器、JIT编译器和用户空间可编程三个特性实现了内核开发的需求：<br></li>
+<li>1）强安全：BPF验证器（verifier）会检查将要运行到内核空间的程序的每一行是否安全可靠，如果检查不通过，它将拒绝这个程序被加载到内核中去，从而保证内核本身不会崩溃<em>（这是不同于开发内核模块的）</em>。<br></li>
+<li>2）高性能：Just-In-Time编译器保证了程序本地运行的高性能。<br></li>
+<li>3）持续交付：可以在不影响系统运行的情况下，实时在线地替换这些运行在Linux内核中的eBPF程序。<br></li>
+</ul>
+<h3 id="1-3-eBPF架构"><a href="#1-3-eBPF架构" class="headerlink" title="1.3 eBPF架构"></a>1.3 eBPF架构</h3><p><img src="/assets/blog/eBPF-1.jpg" alt="Alt text">    （图来自<a target="_blank" rel="noopener" href="https://www.ebpf.top/post/ebpf_intro/%EF%BC%89">https://www.ebpf.top/post/ebpf_intro/）</a><br>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;eBPF用户空间程序和内核中的BPF字节码交互流程如下：<br></p>
+<ul>
+<li>1）使用LLVM或GCC工具将</li>
+</ul>
+<h2 id="二、eBPF编程"><a href="#二、eBPF编程" class="headerlink" title="二、eBPF编程"></a>二、eBPF编程</h2><h2 id="三、eBPF应用——SaBPF"><a href="#三、eBPF应用——SaBPF" class="headerlink" title="三、eBPF应用——SaBPF"></a>三、eBPF应用——SaBPF</h2><h2 id="四、eBPF应用相关论文"><a href="#四、eBPF应用相关论文" class="headerlink" title="四、eBPF应用相关论文"></a>四、eBPF应用相关论文</h2><h2 id="推荐学习路径"><a href="#推荐学习路径" class="headerlink" title="推荐学习路径"></a>推荐学习路径</h2><p>参考狄卫华老师推荐的<a href="">eBPF学习路径</a>，结合自身的学习情况，整理了一些对个人帮助较大的博客和资料，按照不同阶段的学习需求总结如下：</p>
+<h3 id="1-了解eBPF发展背景和相关概念"><a href="#1-了解eBPF发展背景和相关概念" class="headerlink" title="1. 了解eBPF发展背景和相关概念"></a>1. 了解eBPF发展背景和相关概念</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.ebpf.top/post/ebpf_intro/">博客文章——eBPF技术简介</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1PF411V7Lj?share_source=copy_web&vd_source=28532461e369234a7808585e999e9e49">B站视频——陈鹏飞：eBPF概念及在可观测性、网络、安全和优化领域的应用</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=uBqRv8bDroc&t=2s">Youtube视频——Liz Rice：A Beginner’s Guide to eBPF</a></li>
+</ul>
+<h3 id="2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"><a href="#2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解" class="headerlink" title="2. 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"></a>2. 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</h3><ul>
+<li><a href=""></a></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eBPF</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/08/28/eBPF/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-cve-2017-16995" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -512,11 +624,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
+                <a href="javascript:void(0)" class="js-tag color5">eBPF</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">course</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
             
             <div class="clearfix"></div>
