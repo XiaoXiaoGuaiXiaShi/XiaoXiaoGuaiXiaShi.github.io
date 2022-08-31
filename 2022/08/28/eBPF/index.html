@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-8.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-9.jpg">
 <meta property="article:published_time" content="2022-08-28T12:37:31.000Z">
-<meta property="article:modified_time" content="2022-08-31T07:03:45.824Z">
+<meta property="article:modified_time" content="2022-08-31T07:19:59.329Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
@@ -261,7 +261,7 @@
 <li>helloworld.c是BPF用户态程序，它只需要include helloworld.skel.h并按套路加载、挂接BPF程序到内核层对应的埋点即可。由于BPF程序内嵌到用户态程序中，我们在分发BPF程序时只需分发用户态程序即可！<br></li>
 </ul>
 <p>结合上述流程分析，基于libbpf-bootstrap的eBPF程序的开发流程如下：<br></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.下载libbpf-bootstrap</span></span><br><span class="line">git clone https://github.com/libbpf/libbpf-bootstrap.git</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2.初始化和更新libbpf-bootstrap的依赖</span></span><br><span class="line">cat .gitmodules</span><br><span class="line">git submodule update --init --recursive</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.基于libbpf-bootstrap框架的BPF程序</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">进入libbpf-bootstrap/examples/c目录下，在该目录下创建两个C源文件helloworld.bpf.c和helloworld.c(参考了minimal.bpf.c和minimal.c)，显然前者是运行在内核态的BPF程序的源码，而后者则是用于加载BPF到内核的用户态程序。</span></span><br><span class="line">cd libbpf-bootstrap/examples/c</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.安装依赖</span></span><br><span class="line">sudo apt-get install clang llvm</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2.下载libbpf-bootstrap</span></span><br><span class="line">git clone https://github.com/libbpf/libbpf-bootstrap.git</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.初始化和更新libbpf-bootstrap的依赖</span></span><br><span class="line">cat .gitmodules</span><br><span class="line">git submodule update --init --recursive</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4.基于libbpf-bootstrap框架的BPF程序</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">进入libbpf-bootstrap/examples/c目录下，在该目录下创建两个C源文件helloworld.bpf.c和helloworld.c(参考了minimal.bpf.c和minimal.c)，显然前者是运行在内核态的BPF程序的源码，而后者则是用于加载BPF到内核的用户态程序。</span></span><br><span class="line">cd libbpf-bootstrap/examples/c</span><br><span class="line">sudo make minimal</span><br><span class="line">sudo ./minimal</span><br><span class="line">sudo cat /sys/kernel/debug/tracing/trace_pipe</span><br></pre></td></tr></table></figure>
 
 <h4 id="2-2-2-基于libbpf的独立实现"><a href="#2-2-2-基于libbpf的独立实现" class="headerlink" title="2.2.2 基于libbpf的独立实现"></a>2.2.2 基于libbpf的独立实现</h4><p>使用libbpf开发eBPF程序也是需要内核态的eBPF程序和用户态的加载、挂载、映射读取以及输出程序的，步骤如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.安装libbpf库和bpftool工具。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2.在任意路径下建立一个helloworld目录，将前面的helloworld.bpf.c和helloworld.c拷贝到该helloworld目录下。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.编写Makefile。整个Makefile的构建过程与libbpf-bootstrap中的Makefile异曲同工，同样是先编译bpf字节码，然后生成内核头文件helloworld.skel.h。最后编译依赖helloworld.skel.h的helloworld程序。</span></span><br></pre></td></tr></table></figure>
@@ -545,11 +545,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">eBPF</a>
+                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
+                <a href="javascript:void(0)" class="js-tag color5">eBPF</a>
               </li>
              
               <li class="article-tag-list-item">
