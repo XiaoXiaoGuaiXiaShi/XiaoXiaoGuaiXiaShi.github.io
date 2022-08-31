@@ -16,14 +16,16 @@
 <meta property="og:description" content="2014年，eBPF扩展到用户空间，吸引了越来越多的关注。当前，eBPF相关的知名的开源项目包括Facebook的高性能4层负载均衡器Katran，具备API感知和安全高效的容器网络方案Cilium等。eBPF让操作系统内核可编程化，成为云原生时代软件系统的一把利刃。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-1.jpg">
+<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-2.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-3.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-4.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-5.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-6.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-7.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-8.jpg">
+<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-9.jpg">
 <meta property="article:published_time" content="2022-08-28T12:37:31.000Z">
-<meta property="article:modified_time" content="2022-08-31T04:11:10.145Z">
+<meta property="article:modified_time" content="2022-08-31T07:03:45.824Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
@@ -193,7 +195,10 @@
 <h3 id="1-2-BPF内核编程的好处"><a href="#1-2-BPF内核编程的好处" class="headerlink" title="1.2 BPF内核编程的好处"></a>1.2 BPF内核编程的好处</h3><p>传统的Linux内核开发需要实现强安全、高性能和持续交付。<br><br>现有的方案存在以下问题：</p>
 <ul>
 <li>1）直接修改内核代码——&gt;内核版本更新满，每次功能更新都需要重新编译打包内核代码；<br></li>
-<li>2）开发新的可即时加载的内核模块，用户可以在运行时加载到Linux内核中进而扩展内核功能——&gt;内核模块需要跟着内核版本的更新进行调整，此外还存在让内核crash的风险。<br><br>BPF通过BPF验证器、JIT编译器和用户空间可编程三个特性实现了内核开发的需求：</li>
+<li>2）开发新的可即时加载的内核模块，用户可以在运行时加载到Linux内核中进而扩展内核功能——&gt;内核模块需要跟着内核版本的更新进行调整，此外还存在让内核crash的风险。<br></li>
+</ul>
+<p>BPF通过BPF验证器、JIT编译器和用户空间可编程三个特性实现了内核开发的需求：</p>
+<ul>
 <li>1）强安全：BPF验证器（verifier）会检查将要运行到内核空间的程序的每一行是否安全可靠，如果检查不通过，它将拒绝这个程序被加载到内核中去，从而保证内核本身不会崩溃<em>（这是不同于开发内核模块的）</em>。<br></li>
 <li>2）高性能：Just-In-Time（指令即时翻译）编译器保证了程序本地运行的高性能。<br></li>
 <li>3）持续交付：可以在不影响系统运行的情况下，实时在线地替换这些运行在Linux内核中的eBPF程序。<br></li>
@@ -207,23 +212,18 @@
 <li>1）用户自定义程序，使用LLVM或GCC工具将编写的BPF代码程序编译成BPF字节码。<br></li>
 <li>2）字节码被装载到内核VM中，基于类RISC指令的VM运行在内核空间。<br></li>
 <li>3）其中，字节码通过BPF Verifier确保内核安全。<br></li>
-<li>4）验证后的字节码通过BPF JIT机制转成内核可执行的本地指令运行。<br><br>
-上述流程中涉及到的程序的装载过程具体是：通过**bpf()系统调用**将eBPF程序装载到内核中，其中包含多种bpf命令，用于用户空间与内核VM交互。<br>
-![Alt text](/assets/blog/eBPF-2.jpg)<br>
-<br>
-上述流程中涉及到的程序验证具体是：保证程序的安全执行，不破坏内核。主要验证程序的权限、程序不能对内核有损害、程序能够结束（循坏有限）等。<br>
-<br>
-eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行。预定义的钩子包括系统调用、函数入口/出口、内核跟踪点、网络事件和其他钩子。<br></li>
+<li>4）验证后的字节码通过BPF JIT机制转成内核可执行的本地指令运行。<br></li>
 </ul>
+<p>上述流程中涉及到的程序的装载过程具体是：通过<strong>bpf()系统调用</strong>将eBPF程序装载到内核中，其中包含多种bpf命令，用于用户空间与内核VM交互。<br><br>注意：BPF程序不是以机器指令加载到内核的，而是以字节码形式加载到内核中的。<br><img src="/assets/blog/eBPF-2.jpg" alt="Alt text"><br></p>
+<p>上述流程中涉及到的程序验证具体是：保证程序的安全执行，不破坏内核。主要验证程序的权限、程序不能对内核有损害、程序能够结束（循坏有限）等。<br><br>eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行。预定义的钩子包括系统调用、函数入口&#x2F;出口、内核跟踪点、网络事件和其他钩子。<br></p>
 <p><img src="/assets/blog/eBPF-3.jpg" alt="Alt text"><br></p>
-<center>图来自[陈鹏飞：eBPF概念及在可观测性、网络、安全和优化领域的应用](https://www.bilibili.com/video/BV1PF411V7Lj?share_source=copy_web&vd_source=28532461e369234a7808585e999e9e49)</center>
+<center>图来自(eBPF概念及在可观测性、网络、安全和优化领域的应用)</center>
 
-<br>
-内核中运行的BPF字节码程序可以使用两种方式将测量数据回传至用户空间：
-- 1）eBPF maps，被设计成 key/value 的形式，能够在用户态程序与内核态eBPF程序之间进行双向通信。<br>
-- 2）perf-event 用于将内核采集的事件实时发送至用户空间，用户空间程序实时读取分析。<br>
-
-
+<p>内核中运行的BPF字节码程序可以使用两种方式将测量数据回传至用户空间：<br></p>
+<ul>
+<li>1）eBPF maps，被设计成 key&#x2F;value 的形式，能够在用户态程序与内核态eBPF程序之间进行双向通信。<br></li>
+<li>2）perf-event 用于将内核采集的事件实时发送至用户空间，用户空间程序实时读取分析。<br></li>
+</ul>
 <h2 id="二、eBPF编程"><a href="#二、eBPF编程" class="headerlink" title="二、eBPF编程"></a>二、eBPF编程</h2><p>BPF开发工具总结如下图，这里笔者主要使用bpftrace和libbpf-bootstrap进行内核跟踪的开发实践。<br><br><img src="/assets/blog/eBPF-4.jpg" alt="Alt text"><br></p>
 <h3 id="2-1-bpftrace实践"><a href="#2-1-bpftrace实践" class="headerlink" title="2.1 bpftrace实践"></a>2.1 bpftrace实践</h3><p>bpftrace在eBPF和BCC之上构建了一个简化的跟踪语言，通过简单的几行脚本，就可以实现复杂的跟踪功能。</p>
 <blockquote>
@@ -243,25 +243,47 @@ eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行�
 
 <h3 id="2-2-libbpf实践"><a href="#2-2-libbpf实践" class="headerlink" title="2.2 libbpf实践"></a>2.2 libbpf实践</h3><p>BCC依赖于LLVM和内核头文件才可以动态编译和加载eBPF程序，然而，很多环境中通常没有甚至不允许安装这些开发工具。其中一种解决方案就是使用libbpf来开发一个eBPF程序。<br></p>
 <blockquote>
-<p>libbpf其实是指linux内核代码库中的tools&#x2F;lib&#x2F;bpf，是内核提供给外部开发者的C库，用于创建BPF用户态的程序。<br>在eBPF程序中，由于内核已经支持了BTF，因此不再需要引入众多的内核头文件来获取内核数据结构的定义。取而代之的是一个通过bpftool生成的vmlinux.h头文件，其中包含了内核数据结构的定义。<br><br></p>
+<p>首先需要知道，一个以开发BPF程序为目的的工程通常由两类源文件组成：</p>
+<ul>
+<li>一类是运行于内核态的BPF程序的源代码文件.</li>
+<li>另外一类是用于向内核加载BPF程序、从内核卸载BPF程序、与内核态进行数据交互、展现用户态程序逻辑的用户态程序的源代码文件。</li>
+</ul>
 </blockquote>
-<p>使用libbpf开发eBPF程序也是需要内核态的eBPF程序和用户态的加载、挂载、映射读取以及输出程序的，步骤如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.内核头文件生成</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-2-1-基于libbpf-bootstrap项目的实现"><a href="#2-2-1-基于libbpf-bootstrap项目的实现" class="headerlink" title="2.2.1 基于libbpf-bootstrap项目的实现"></a>2.2.1 基于libbpf-bootstrap项目的实现</h4><p>内核BPF开发者Andrii Nakryiko在github上开源了一个直接基于libbpf开发BPF程序与加载器的引导项目libbpf-bootstrap，这个项目中包含使用c和rust开发BPF程序和用户态程序的例子。下图是基于libbpf-bootstrap实现的hello world程序实例的示意图。</p>
+<p><img src="/assets/blog/eBPF-9.jpg" alt="Alt text"><br></p>
+<center>图来自参考链接“使用C语言...eBPF程序”</center>
 
-<h2 id="三、eBPF应用——SaBPF"><a href="#三、eBPF应用——SaBPF" class="headerlink" title="三、eBPF应用——SaBPF"></a>三、eBPF应用——SaBPF</h2><h2 id="四、eBPF应用相关论文"><a href="#四、eBPF应用相关论文" class="headerlink" title="四、eBPF应用相关论文"></a>四、eBPF应用相关论文</h2><h2 id="五、推荐学习路径"><a href="#五、推荐学习路径" class="headerlink" title="五、推荐学习路径"></a>五、推荐学习路径</h2><p>参考狄卫华老师推荐的<a href="">eBPF学习路径</a>，结合自身的学习情况，整理了一些对个人帮助较大的博客和资料，按照不同阶段的学习需求总结如下：</p>
-<h3 id="5-1-了解eBPF发展背景和相关概念"><a href="#5-1-了解eBPF发展背景和相关概念" class="headerlink" title="5.1 了解eBPF发展背景和相关概念"></a>5.1 了解eBPF发展背景和相关概念</h3><ul>
+<ul>
+<li>图中的libbpf其实是指linux内核代码库中的tools&#x2F;lib&#x2F;bpf，是内核提供给外部开发者的C库，用于创建BPF用户态的程序。<br></li>
+<li>图中的bpftool对应的是linux内核代码库中的tools&#x2F;bpf&#x2F;bpftool，是一个bpf辅助工具，在libbpf-bootstrap中用于生成xx.skel.h。（在eBPF程序中，由于内核已经支持了BTF，因此不再需要引入众多的内核头文件来获取内核数据结构的定义。取而代之的是一个通过bpftool生成的vmlinux.h头文件——也就是xx.skel.h，其中包含了内核数据结构的定义。<br></li>
+<li>helloworld.bpf.c是bpf程序对应的源码，通过clang -target&#x3D;bpf编译成BPF字节码ELF文件helloworld.bpf.o。<br></li>
+<li>libbpf-bootstrap并没有使用用户态加载程序直接去加载helloworld.bpf.o，而是通过bpftool gen命令基于helloworld.bpf.o生成helloworld.skel.h文件，在生成的helloworld.skel.h文件中包含了BPF程序的字节码以及加载、卸载对应BPF程序的函数，我们在用户态程序直接调用即可。<br></li>
+<li>helloworld.c是BPF用户态程序，它只需要include helloworld.skel.h并按套路加载、挂接BPF程序到内核层对应的埋点即可。由于BPF程序内嵌到用户态程序中，我们在分发BPF程序时只需分发用户态程序即可！<br></li>
+</ul>
+<p>结合上述流程分析，基于libbpf-bootstrap的eBPF程序的开发流程如下：<br></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.下载libbpf-bootstrap</span></span><br><span class="line">git clone https://github.com/libbpf/libbpf-bootstrap.git</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2.初始化和更新libbpf-bootstrap的依赖</span></span><br><span class="line">cat .gitmodules</span><br><span class="line">git submodule update --init --recursive</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.基于libbpf-bootstrap框架的BPF程序</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">进入libbpf-bootstrap/examples/c目录下，在该目录下创建两个C源文件helloworld.bpf.c和helloworld.c(参考了minimal.bpf.c和minimal.c)，显然前者是运行在内核态的BPF程序的源码，而后者则是用于加载BPF到内核的用户态程序。</span></span><br><span class="line">cd libbpf-bootstrap/examples/c</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2-2-基于libbpf的独立实现"><a href="#2-2-2-基于libbpf的独立实现" class="headerlink" title="2.2.2 基于libbpf的独立实现"></a>2.2.2 基于libbpf的独立实现</h4><p>使用libbpf开发eBPF程序也是需要内核态的eBPF程序和用户态的加载、挂载、映射读取以及输出程序的，步骤如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.安装libbpf库和bpftool工具。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2.在任意路径下建立一个helloworld目录，将前面的helloworld.bpf.c和helloworld.c拷贝到该helloworld目录下。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.编写Makefile。整个Makefile的构建过程与libbpf-bootstrap中的Makefile异曲同工，同样是先编译bpf字节码，然后生成内核头文件helloworld.skel.h。最后编译依赖helloworld.skel.h的helloworld程序。</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="三、推荐学习路径"><a href="#三、推荐学习路径" class="headerlink" title="三、推荐学习路径"></a>三、推荐学习路径</h2><p>参考狄卫华老师推荐的<a href="">eBPF学习路径</a>，结合自身的学习情况，整理了一些对个人帮助较大的博客和资料，按照不同阶段的学习需求总结如下：</p>
+<h3 id="3-1-了解eBPF发展背景和相关概念"><a href="#3-1-了解eBPF发展背景和相关概念" class="headerlink" title="3.1 了解eBPF发展背景和相关概念"></a>3.1 了解eBPF发展背景和相关概念</h3><ul>
 <li><a target="_blank" rel="noopener" href="https://www.ebpf.top/post/ebpf_intro/">博客文章——eBPF技术简介</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1PF411V7Lj?share_source=copy_web&vd_source=28532461e369234a7808585e999e9e49">B站视频——陈鹏飞：eBPF概念及在可观测性、网络、安全和优化领域的应用</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=uBqRv8bDroc&t=2s">Youtube视频——Liz Rice：A Beginner’s Guide to eBPF</a></li>
 </ul>
-<h3 id="5-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"><a href="#5-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解" class="headerlink" title="5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"></a>5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</h3><ul>
+<h3 id="3-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"><a href="#3-2-初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解" class="headerlink" title="3.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解"></a>3.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</h3><ul>
 <li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lfri/p/15402973.html">博客文章——BPF C编程入门</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_22338935/article/details/123005213">博客文章——使用bpfttrace开发eBEP程序</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_22338935/article/details/123318084">博客文章——使用libbpf开发eBPF程序</a></li>
 <li><a target="_blank" rel="noopener" href="https://tonybai.com/2022/07/05/develop-hello-world-ebpf-program-in-c-from-scratch/">博客文章——使用C语言从头开发一个Hello World级别的eBPF程序</a></li>
+<li><a target="_blank" rel="noopener" href="https://forsworns.github.io/zh/blogs/20210627/">博客文章——使用libbpf-bootstrap构建BPF程序</a></li>
 </ul>
-<h3 id="5-3-穿插书籍阅读，分模块深入"><a href="#5-3-穿插书籍阅读，分模块深入" class="headerlink" title="5.3 穿插书籍阅读，分模块深入"></a>5.3 穿插书籍阅读，分模块深入</h3><p>- </p>
-<h2 id="六、国内eBPF实践团队"><a href="#六、国内eBPF实践团队" class="headerlink" title="六、国内eBPF实践团队"></a>六、国内eBPF实践团队</h2><ul>
+<h3 id="3-3-穿插书籍阅读，分模块深入"><a href="#3-3-穿插书籍阅读，分模块深入" class="headerlink" title="3.3 穿插书籍阅读，分模块深入"></a>3.3 穿插书籍阅读，分模块深入</h3><ul>
+<li>《Linux内核观测技术BPF》</li>
+</ul>
+<h2 id="四、国内eBPF实践团队"><a href="#四、国内eBPF实践团队" class="headerlink" title="四、国内eBPF实践团队"></a>四、国内eBPF实践团队</h2><ul>
 <li>字节跳动STE团队</li>
 <li>阿里云荣旸</li>
 <li>腾讯云TKE团队</li>
@@ -391,7 +413,7 @@ eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行�
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81eBPF%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">一、eBPF概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81BPF"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 为什么需要BPF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-BPF%E5%86%85%E6%A0%B8%E7%BC%96%E7%A8%8B%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 BPF内核编程的好处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-eBPF%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 eBPF架构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81eBPF%E7%BC%96%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">二、eBPF编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-bpftrace%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 bpftrace实践</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-1-tracepoint%E8%B7%9F%E8%B8%AA"><span class="toc-number">2.1.1.</span> <span class="toc-text">2.1.1 tracepoint跟踪</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-2-kprobe%E7%9B%91%E6%8E%A7"><span class="toc-number">2.1.2.</span> <span class="toc-text">2.1.2 kprobe监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-3-%E7%94%A8%E6%88%B7%E6%80%81%E5%87%BD%E6%95%B0%E6%8E%A2%E9%92%88%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.3.</span> <span class="toc-text">2.1.3 用户态函数探针检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-4-%E4%BA%8B%E4%BB%B6%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.4.</span> <span class="toc-text">2.1.4 事件检测</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-libbpf%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 libbpf实践</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81eBPF%E5%BA%94%E7%94%A8%E2%80%94%E2%80%94SaBPF"><span class="toc-number">3.</span> <span class="toc-text">三、eBPF应用——SaBPF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81eBPF%E5%BA%94%E7%94%A8%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87"><span class="toc-number">4.</span> <span class="toc-text">四、eBPF应用相关论文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%8E%A8%E8%8D%90%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84"><span class="toc-number">5.</span> <span class="toc-text">五、推荐学习路径</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%BA%86%E8%A7%A3eBPF%E5%8F%91%E5%B1%95%E8%83%8C%E6%99%AF%E5%92%8C%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 了解eBPF发展背景和相关概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%88%9D%E6%AD%A5%E6%8E%A2%E7%B4%A2eBPF%E7%BC%96%E7%A8%8B%E5%B9%B6%E7%BB%93%E5%90%88%E5%AE%9E%E8%B7%B5%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%B7%B1%E5%8C%96%E5%AF%B9eBPF%E7%9B%B8%E5%85%B3%E5%8A%9F%E8%83%BD%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E7%A9%BF%E6%8F%92%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%EF%BC%8C%E5%88%86%E6%A8%A1%E5%9D%97%E6%B7%B1%E5%85%A5"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 穿插书籍阅读，分模块深入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%9B%BD%E5%86%85eBPF%E5%AE%9E%E8%B7%B5%E5%9B%A2%E9%98%9F"><span class="toc-number">6.</span> <span class="toc-text">六、国内eBPF实践团队</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81eBPF%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">一、eBPF概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81BPF"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 为什么需要BPF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-BPF%E5%86%85%E6%A0%B8%E7%BC%96%E7%A8%8B%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 BPF内核编程的好处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-eBPF%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 eBPF架构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81eBPF%E7%BC%96%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">二、eBPF编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-bpftrace%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 bpftrace实践</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-1-tracepoint%E8%B7%9F%E8%B8%AA"><span class="toc-number">2.1.1.</span> <span class="toc-text">2.1.1 tracepoint跟踪</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-2-kprobe%E7%9B%91%E6%8E%A7"><span class="toc-number">2.1.2.</span> <span class="toc-text">2.1.2 kprobe监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-3-%E7%94%A8%E6%88%B7%E6%80%81%E5%87%BD%E6%95%B0%E6%8E%A2%E9%92%88%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.3.</span> <span class="toc-text">2.1.3 用户态函数探针检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-4-%E4%BA%8B%E4%BB%B6%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.4.</span> <span class="toc-text">2.1.4 事件检测</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-libbpf%E5%AE%9E%E8%B7%B5"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 libbpf实践</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-1-%E5%9F%BA%E4%BA%8Elibbpf-bootstrap%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.2.1.</span> <span class="toc-text">2.2.1 基于libbpf-bootstrap项目的实现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-2-%E5%9F%BA%E4%BA%8Elibbpf%E7%9A%84%E7%8B%AC%E7%AB%8B%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.2.2.</span> <span class="toc-text">2.2.2 基于libbpf的独立实现</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A8%E8%8D%90%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84"><span class="toc-number">3.</span> <span class="toc-text">三、推荐学习路径</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%BA%86%E8%A7%A3eBPF%E5%8F%91%E5%B1%95%E8%83%8C%E6%99%AF%E5%92%8C%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 了解eBPF发展背景和相关概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%88%9D%E6%AD%A5%E6%8E%A2%E7%B4%A2eBPF%E7%BC%96%E7%A8%8B%E5%B9%B6%E7%BB%93%E5%90%88%E5%AE%9E%E8%B7%B5%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%B7%B1%E5%8C%96%E5%AF%B9eBPF%E7%9B%B8%E5%85%B3%E5%8A%9F%E8%83%BD%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 初步探索eBPF编程并结合实践进一步深化对eBPF相关功能的理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E7%A9%BF%E6%8F%92%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%EF%BC%8C%E5%88%86%E6%A8%A1%E5%9D%97%E6%B7%B1%E5%85%A5"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 穿插书籍阅读，分模块深入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%9B%BD%E5%86%85eBPF%E5%AE%9E%E8%B7%B5%E5%9B%A2%E9%98%9F"><span class="toc-number">4.</span> <span class="toc-text">四、国内eBPF实践团队</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -523,11 +545,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
+                <a href="javascript:void(0)" class="js-tag color5">eBPF</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">eBPF</a>
+                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
               <li class="article-tag-list-item">
