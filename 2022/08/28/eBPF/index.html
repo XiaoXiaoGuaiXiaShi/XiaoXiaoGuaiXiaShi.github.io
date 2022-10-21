@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-8.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF-9.jpg">
 <meta property="article:published_time" content="2022-08-28T12:37:31.000Z">
-<meta property="article:modified_time" content="2022-08-31T07:19:59.329Z">
+<meta property="article:modified_time" content="2022-10-21T02:36:51.115Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
@@ -214,7 +214,8 @@
 <li>3）其中，字节码通过BPF Verifier确保内核安全。<br></li>
 <li>4）验证后的字节码通过BPF JIT机制转成内核可执行的本地指令运行。<br></li>
 </ul>
-<p>上述流程中涉及到的程序的装载过程具体是：通过<strong>bpf()系统调用</strong>将eBPF程序装载到内核中，其中包含多种bpf命令，用于用户空间与内核VM交互。<br><br>注意：BPF程序不是以机器指令加载到内核的，而是以字节码形式加载到内核中的。<br><img src="/assets/blog/eBPF-2.jpg" alt="Alt text"><br></p>
+<p>上述流程中涉及到的程序的装载过程具体是：通过<strong>bpf()系统调用</strong>将eBPF程序装载到内核中，其中包含多种bpf命令，用于用户空间与内核VM交互。<br>注意：BPF程序不是以机器指令加载到内核的，而是以字节码形式加载到内核中的。</p>
+<p><img src="/assets/blog/eBPF-2.jpg" alt="Alt text"><br></p>
 <p>上述流程中涉及到的程序验证具体是：保证程序的安全执行，不破坏内核。主要验证程序的权限、程序不能对内核有损害、程序能够结束（循坏有限）等。<br><br>eBPF是事件驱动的，当内核或应用程序通过某个挂钩点时运行。预定义的钩子包括系统调用、函数入口&#x2F;出口、内核跟踪点、网络事件和其他钩子。<br></p>
 <p><img src="/assets/blog/eBPF-3.jpg" alt="Alt text"><br></p>
 <center>图来自(eBPF概念及在可观测性、网络、安全和优化领域的应用)</center>
@@ -227,7 +228,7 @@
 <h2 id="二、eBPF编程"><a href="#二、eBPF编程" class="headerlink" title="二、eBPF编程"></a>二、eBPF编程</h2><p>BPF开发工具总结如下图，这里笔者主要使用bpftrace和libbpf-bootstrap进行内核跟踪的开发实践。<br><br><img src="/assets/blog/eBPF-4.jpg" alt="Alt text"><br></p>
 <h3 id="2-1-bpftrace实践"><a href="#2-1-bpftrace实践" class="headerlink" title="2.1 bpftrace实践"></a>2.1 bpftrace实践</h3><p>bpftrace在eBPF和BCC之上构建了一个简化的跟踪语言，通过简单的几行脚本，就可以实现复杂的跟踪功能。</p>
 <blockquote>
-<p>安装bpftrace参考：<a target="_blank" rel="noopener" href="https://github.com/iovisor/bpftrace/blob/master/INSTALL.md%EF%BC%8C%E8%8B%A5%E6%9C%AA%E6%AD%A3%E7%A1%AE%E5%AE%89%E8%A3%85%E5%8F%AF%E8%83%BD%E4%BC%9A%E5%87%BA%E7%8E%B0%E2%80%9Clockdown">https://github.com/iovisor/bpftrace/blob/master/INSTALL.md，若未正确安装可能会出现“lockdown</a> is enabled and set to ‘confidentiality’”报错。</p>
+<p>安装bpftrace参考：<a target="_blank" rel="noopener" href="https://github.com/iovisor/bpftrace/blob/master/INSTALL.md">https://github.com/iovisor/bpftrace/blob/master/INSTALL.md</a> 。<br>若未正确安装可能会出现“lockdown is enabled and set to ‘confidentiality’”报错。</p>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查询内核插桩和跟踪点</span></span><br><span class="line">sudo bpftrace -l &#x27;*execve*&#x27;</span><br><span class="line">sudo bpftrace -l ｜grep execve</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">这些函数可以分为 tracepoint（内核静态探针），kprobe（内核态动态函数探针）和 kfunc （基于BPF的内核态动态函数探针）三类。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kfunc，kprobe属于不稳定接口，而tracepoint则是稳定接口。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">因而，优先选择更稳定的跟踪点，以保证 eBPF 程序的可移植性（即在不同版本的内核中都可以正常执行）。</span></span><br></pre></td></tr></table></figure>
 <p><img src="/assets/blog/eBPF-5.jpg" alt="Alt text"><br></p>
@@ -255,13 +256,13 @@
 
 <ul>
 <li>图中的libbpf其实是指linux内核代码库中的tools&#x2F;lib&#x2F;bpf，是内核提供给外部开发者的C库，用于创建BPF用户态的程序。<br></li>
-<li>图中的bpftool对应的是linux内核代码库中的tools&#x2F;bpf&#x2F;bpftool，是一个bpf辅助工具，在libbpf-bootstrap中用于生成xx.skel.h。（在eBPF程序中，由于内核已经支持了BTF，因此不再需要引入众多的内核头文件来获取内核数据结构的定义。取而代之的是一个通过bpftool生成的vmlinux.h头文件——也就是xx.skel.h，其中包含了内核数据结构的定义。<br></li>
+<li>图中的bpftool对应的是linux内核代码库中的tools&#x2F;bpf&#x2F;bpftool，是一个bpf辅助工具，在libbpf-bootstrap中用于生成xx.skel.h。（在eBPF程序中，由于内核已经支持了BPF，因此不再需要引入众多的内核头文件来获取内核数据结构的定义。取而代之的是一个通过bpftool生成的vmlinux.h头文件——也就是xx.skel.h，其中包含了内核数据结构的定义。<br></li>
 <li>helloworld.bpf.c是bpf程序对应的源码，通过clang -target&#x3D;bpf编译成BPF字节码ELF文件helloworld.bpf.o。<br></li>
 <li>libbpf-bootstrap并没有使用用户态加载程序直接去加载helloworld.bpf.o，而是通过bpftool gen命令基于helloworld.bpf.o生成helloworld.skel.h文件，在生成的helloworld.skel.h文件中包含了BPF程序的字节码以及加载、卸载对应BPF程序的函数，我们在用户态程序直接调用即可。<br></li>
 <li>helloworld.c是BPF用户态程序，它只需要include helloworld.skel.h并按套路加载、挂接BPF程序到内核层对应的埋点即可。由于BPF程序内嵌到用户态程序中，我们在分发BPF程序时只需分发用户态程序即可！<br></li>
 </ul>
 <p>结合上述流程分析，基于libbpf-bootstrap的eBPF程序的开发流程如下：<br></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.安装依赖</span></span><br><span class="line">sudo apt-get install clang llvm</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2.下载libbpf-bootstrap</span></span><br><span class="line">git clone https://github.com/libbpf/libbpf-bootstrap.git</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.初始化和更新libbpf-bootstrap的依赖</span></span><br><span class="line">cat .gitmodules</span><br><span class="line">git submodule update --init --recursive</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4.基于libbpf-bootstrap框架的BPF程序</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">进入libbpf-bootstrap/examples/c目录下，在该目录下创建两个C源文件helloworld.bpf.c和helloworld.c(参考了minimal.bpf.c和minimal.c)，显然前者是运行在内核态的BPF程序的源码，而后者则是用于加载BPF到内核的用户态程序。</span></span><br><span class="line">cd libbpf-bootstrap/examples/c</span><br><span class="line">sudo make minimal</span><br><span class="line">sudo ./minimal</span><br><span class="line">sudo cat /sys/kernel/debug/tracing/trace_pipe</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.安装依赖</span></span><br><span class="line">sudo apt-get install make clang llvm libelf-dev pkg-config gcc binutils-dev libcap-dev</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2.下载libbpf-bootstrap</span></span><br><span class="line">git clone https://github.com/libbpf/libbpf-bootstrap.git</span><br><span class="line">cd libbpf-bootstrap/</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.初始化和更新libbpf-bootstrap的依赖</span></span><br><span class="line">cat .gitmodules</span><br><span class="line">git submodule update --init --recursive</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4.基于libbpf-bootstrap框架的BPF程序</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">进入libbpf-bootstrap/examples/c目录下，在该目录下创建两个C源文件helloworld.bpf.c和helloworld.c(参考了minimal.bpf.c和minimal.c)，显然前者是运行在内核态的BPF程序的源码，而后者则是用于加载BPF到内核的用户态程序。</span></span><br><span class="line">cd examples/c</span><br><span class="line">sudo make minimal</span><br><span class="line">sudo ./minimal</span><br><span class="line">sudo cat /sys/kernel/debug/tracing/trace_pipe</span><br></pre></td></tr></table></figure>
 
 <h4 id="2-2-2-基于libbpf的独立实现"><a href="#2-2-2-基于libbpf的独立实现" class="headerlink" title="2.2.2 基于libbpf的独立实现"></a>2.2.2 基于libbpf的独立实现</h4><p>使用libbpf开发eBPF程序也是需要内核态的eBPF程序和用户态的加载、挂载、映射读取以及输出程序的，步骤如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1.安装libbpf库和bpftool工具。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2.在任意路径下建立一个helloworld目录，将前面的helloworld.bpf.c和helloworld.c拷贝到该helloworld目录下。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3.编写Makefile。整个Makefile的构建过程与libbpf-bootstrap中的Makefile异曲同工，同样是先编译bpf字节码，然后生成内核头文件helloworld.skel.h。最后编译依赖helloworld.skel.h的helloworld程序。</span></span><br></pre></td></tr></table></figure>
@@ -384,9 +385,18 @@
   
 <nav id="article-nav">
   
+    <a href="/2022/10/19/eBPF-2-md/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          eBPF编程入门
+        
+      </div>
+    </a>
   
-    <a href="/2018/03/22/cve-2017-16995/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Ubuntu16.04.4 本地提权漏洞（CVE-2017-16995）</div>
+  
+    <a href="/2019/09/10/life-1-md/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">新的学期，新的生活</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -541,10 +551,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">config</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
@@ -554,6 +560,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">course</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">feeling</a>
               </li>
             
             <div class="clearfix"></div>
