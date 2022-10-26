@@ -70,8 +70,6 @@
     			
             
     			
-    			<a q-on="click: openSlider(e, 'friends')" href="javascript:void(0)">友链</a>
-    			
             
     			
     			<a q-on="click: openSlider(e, 'aboutme')" href="javascript:void(0)">关于我</a>
@@ -172,7 +170,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>上一篇文章中介绍了eBPF初步学习的相关基础知识点，对eBPF开发环境还不太了解的可以先移步上一篇。本篇从libbpf-bootstrap下的minimal例子入手，学习libbpf的代码风格及eBPF编程中的一些规则和定义，并对基于eBPF实现的容器日志取证系统SaBPF进行了复现分析。</p>
+        <p>上一篇文章中介绍了eBPF初步学习的相关基础知识点，对eBPF开发环境还不太了解的可以先移步上一篇。本篇从libbpf-bootstrap下的minimal例子入手，学习libbpf的代码风格及eBPF编程中的一些规则和定义，并对基于eBPF实现的容器日志取证系统ProvBPF进行了复现分析。</p>
         
           <a class="article-more-a" href="/2022/10/19/eBPF-2-md/#more">more >></a>
         
@@ -728,8 +726,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
       
     
       
-      
-      
     
       
       
@@ -741,15 +737,13 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
     
     
       
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'innerArchive')"><a href="javascript:void(0)" q-class="active:innerArchive">所有文章</a></li>
+      <li style="width: 50%" q-on="click: openSlider(e, 'innerArchive')"><a href="javascript:void(0)" q-class="active:innerArchive">所有文章</a></li>
       
         
       
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'friends')"><a href="javascript:void(0)" q-class="active:friends">友链</a></li>
-      
         
       
-      <li style="width: 33.333333333333336%" q-on="click: openSlider(e, 'aboutme')"><a href="javascript:void(0)" q-class="active:aboutme">关于我</a></li>
+      <li style="width: 50%" q-on="click: openSlider(e, 'aboutme')"><a href="javascript:void(0)" q-class="active:aboutme">关于我</a></li>
       
         
     </ul>
@@ -829,31 +823,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
     
 
     
-    	<section class="tools-section tools-section-friends" q-show="friends">
-  		
-        <ul class="search-ul">
-          
-            <li class="search-li">
-              <a href="http://byxs0x0.cn/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>byxs0x0</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="https://www.yourhome.ren/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>DoubleStar</a>
-            </li>
-          
-            <li class="search-li">
-              <a href="http://www.blogsir.com.cn/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>jiangsir</a>
-            </li>
-          
-        </ul>
-  		
-    	</section>
-    
 
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">信息安全在读学生  渴望成长 热爱技术</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">博士生在读，研究方向为容器安全。</div>
   	  	
     	</section>
     
