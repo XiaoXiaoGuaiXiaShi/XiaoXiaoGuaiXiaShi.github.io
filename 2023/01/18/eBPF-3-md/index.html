@@ -15,13 +15,11 @@
 <meta property="og:site_name" content="DQQ&#39;s blog">
 <meta property="og:description" content="上一篇文章中介绍了eBPF编程入门的基础内容和结构，本篇进一步分析了BPF技术中的重要数据结构。此外，过去许多BPF应用程序都是基于BCC实现的，但libbpf+BPF CO-RE的方式无疑更好上手。因此，本篇中也说明了由BCC转换到libbpf过程中需要注意的一些问题。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF3-1.jpg">
 <meta property="article:published_time" content="2023-01-18T07:45:40.000Z">
-<meta property="article:modified_time" content="2023-02-28T11:21:52.857Z">
+<meta property="article:modified_time" content="2023-02-28T11:58:32.010Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF3-1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="DQQ&#39;s blog" type="application/atom+xml">
   
@@ -204,12 +202,11 @@
 <li>3、首选reserve&#x2F;commit API，相比bpf_ringbuf_output()，消除了额外的内存复制和临时存储空间的需求。</li>
 </ul>
 <h2 id="四、开发过程中遇到的一些问题"><a href="#四、开发过程中遇到的一些问题" class="headerlink" title="四、开发过程中遇到的一些问题"></a>四、开发过程中遇到的一些问题</h2><h3 id="4-1-vmlinux头文件中类型重定义错误"><a href="#4-1-vmlinux头文件中类型重定义错误" class="headerlink" title="4.1 vmlinux头文件中类型重定义错误"></a>4.1 vmlinux头文件中类型重定义错误</h3><ul>
-<li>问题描述：<br><img src="/assets/blog/eBPF3-1.jpg" alt="Alt text"><br><center>报错截图</center></li>
 <li>解决方案：vmlinux.h和bpf.h冲突，删除bpf.h include。</li>
 </ul>
 <h3 id="4-2-如何在BPF程序中按照PID过滤"><a href="#4-2-如何在BPF程序中按照PID过滤" class="headerlink" title="4.2 如何在BPF程序中按照PID过滤"></a>4.2 如何在BPF程序中按照PID过滤</h3><ul>
 <li>问题分析：PID是进程标识符，按照PID过滤则需要了解进程在内核空间的结构。</li>
-<li>Linux进程：<br>在Linux系统中进程在内核空间一般用任务&#x2F;Task来表示，内核中对应的结构为task_struct。<br><br>用户创建的线程在Linux内核中也会对等创建一个task_struct结构，属于同一个进程的多个线程对应的task_struct结构在底层实现了进程级别资源的共享，比如内存、信号量、文件等。<br></li>
+<li>Linux进程：<br>在Linux系统中进程在内核空间一般用任务&#x2F;Task来表示，内核中对应的结构为task_struct。<br>用户创建的线程在Linux内核中也会对等创建一个task_struct结构，属于同一个进程的多个线程对应的task_struct结构在底层实现了进程级别资源的共享，比如内存、信号量、文件等。<br></li>
 <li>进程pid的过滤：bpf_get_current_pid_tgid() &gt;&gt; 32，高32位置为tgid，低32位为 pid(tid)。</li>
 </ul>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
