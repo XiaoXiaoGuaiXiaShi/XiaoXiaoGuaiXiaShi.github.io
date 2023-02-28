@@ -6,17 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://XiaoXiaoGuaiXiaShi.github.io.git">
-  <title>Archives: 2022/8 | DQQ&#39;s blog</title>
+  <title>eBPF编程实战 | DQQ&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="There is more to come.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DQQ&#39;s blog">
-<meta property="og:url" content="https://xiaoxiaoguaixiashi.github.io.git/archives/2022/08/index.html">
+  <meta name="description" content="上一篇文章中介绍了eBPF编程入门的基础内容和结构，本篇进一步分析了BPF技术中的重要数据结构。此外，过去许多BPF应用程序都是基于BCC实现的，但libbpf+BPF CO-RE的方式无疑更好上手。因此，本篇中也说明了由BCC转换到libbpf过程中需要注意的一些问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="eBPF编程实战">
+<meta property="og:url" content="https://xiaoxiaoguaixiashi.github.io.git/2023/01/18/eBPF-3-md/index.html">
 <meta property="og:site_name" content="DQQ&#39;s blog">
-<meta property="og:description" content="There is more to come.">
+<meta property="og:description" content="上一篇文章中介绍了eBPF编程入门的基础内容和结构，本篇进一步分析了BPF技术中的重要数据结构。此外，过去许多BPF应用程序都是基于BCC实现的，但libbpf+BPF CO-RE的方式无疑更好上手。因此，本篇中也说明了由BCC转换到libbpf过程中需要注意的一些问题。">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF3-1.jpg">
+<meta property="article:published_time" content="2023-01-18T07:45:40.000Z">
+<meta property="article:modified_time" content="2023-02-28T11:21:52.857Z">
 <meta property="article:author" content="DQQ">
+<meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/eBPF3-1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="DQQ&#39;s blog" type="application/atom+xml">
   
@@ -148,36 +153,79 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-eBPF-3-md" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2022" class="archive-year">2022</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2022/08/28/eBPF/" class="archive-article-date">
-  	<time datetime="2022-08-28T12:37:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-08-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/08/28/eBPF/">eBPF初步学习</a>
+    <h1 class="article-title" itemprop="name">
+      eBPF编程实战
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2023/01/18/eBPF-3-md/" class="archive-article-date">
+  	<time datetime="2023-01-18T07:45:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-01-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上一篇文章中介绍了eBPF编程入门的基础内容和结构，本篇进一步分析了BPF技术中的重要数据结构。此外，过去许多BPF应用程序都是基于BCC实现的，但libbpf+BPF CO-RE的方式无疑更好上手。因此，本篇中也说明了由BCC转换到libbpf过程中需要注意的一些问题。</p>
+<span id="more"></span>
+
+<h2 id="一、BPF-Map"><a href="#一、BPF-Map" class="headerlink" title="一、BPF Map"></a>一、BPF Map</h2><ul>
+<li>BPF Map以“键&#x2F;值”方式存储在内核中，可以被任何BPF程序访问。在内核空间的程序创建BPF Map并返回对应的文件描述符，在用户空间运行的程序就可以通过文件描述符来访问并操作BPF Map。</li>
+<li>BPF映射提供了内核和用户空间双向数据共享，允许用户从内核和用户空间读取和写入数据。BPF映射的数据结构类型可以从简单数组、哈希映射到自定义类型映射。</li>
+</ul>
+<h2 id="二、BCC到libbpf的转换"><a href="#二、BCC到libbpf的转换" class="headerlink" title="二、BCC到libbpf的转换"></a>二、BCC到libbpf的转换</h2><h3 id="2-1-构建基于libbpf的应用程序"><a href="#2-1-构建基于libbpf的应用程序" class="headerlink" title="2.1 构建基于libbpf的应用程序"></a>2.1 构建基于libbpf的应用程序</h3><p>参考PRovBPF，笔者总结了一个通用的Makefile规则，如下所示：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">btf:</span></span><br><span class="line">	bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; <span class="keyword">include</span>/kern/vmlinux.h</span><br><span class="line"></span><br><span class="line"><span class="section">kern:</span></span><br><span class="line">	clang -O2 -Wall \</span><br><span class="line">	-Iinclude \</span><br><span class="line">	-target bpf -g -c kern.c -o project.o</span><br><span class="line"></span><br><span class="line"><span class="section">skel:</span></span><br><span class="line">	bpftool gen skeleton project.o &gt; <span class="keyword">include</span>/usr/project.skel.h</span><br><span class="line"></span><br><span class="line"><span class="section">usr:</span></span><br><span class="line">	clang -Wall usr.c -o usr.o -Iinclude -c</span><br><span class="line">	clang -Wall service.c -o service.o -Iinclude -c</span><br><span class="line">	clang -o projectd \</span><br><span class="line">	service.o \</span><br><span class="line">	usr.o \</span><br><span class="line">	-lbpf -lpthread -linih</span><br><span class="line"></span><br><span class="line"><span class="section">usr_dbg:</span></span><br><span class="line">	clang -g usr.c -o usr.o -Iinclude -c</span><br><span class="line">	clang -g service.c -o service.o -Iinclude -c</span><br><span class="line">	clang -g -o projectd \</span><br><span class="line">	service.o \</span><br><span class="line">	usr.o \</span><br><span class="line">	-lbpf -lpthread -linih</span><br><span class="line"></span><br><span class="line"><span class="section">all: clean btf kern skel usr</span></span><br><span class="line"></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	rm -f *.o</span><br><span class="line">	rm -f <span class="keyword">include</span>/usr/project.skel.h</span><br><span class="line">	rm -f <span class="keyword">include</span>/kern/vmlinux.h</span><br><span class="line">	rm -rf output</span><br><span class="line"></span><br><span class="line"><span class="section">install:</span></span><br><span class="line">	sudo cp --force ./projectd /usr/bin/projectd</span><br><span class="line">	sudo cp --force ./projectd.service /etc/systemd/system/projectd.service</span><br><span class="line">	sudo systemctl enable projectd.service</span><br><span class="line"></span><br><span class="line"><span class="section">start:</span></span><br><span class="line">	sudo systemctl start projectd.service</span><br><span class="line"></span><br><span class="line"><span class="section">stop:</span></span><br><span class="line">	sudo systemctl stop projectd.service</span><br><span class="line"></span><br><span class="line"><span class="section">status:</span></span><br><span class="line">	sudo systemctl status projectd.service</span><br><span class="line"></span><br><span class="line"><span class="section">uninstall:</span></span><br><span class="line">	sudo systemctl stop projectd.service</span><br><span class="line">	sudo systemctl disable projectd.service</span><br><span class="line">	sudo rm -f /usr/bin/projectd</span><br><span class="line">	sudo rm -f /etc/systemd/system/projectd.service</span><br><span class="line"></span><br><span class="line"><span class="section">run:</span></span><br><span class="line">	rm -rf audit.log</span><br><span class="line">	sudo projectd</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-使用libbpf和BCC的区别"><a href="#2-2-使用libbpf和BCC的区别" class="headerlink" title="2.2 使用libbpf和BCC的区别"></a>2.2 使用libbpf和BCC的区别</h3><ul>
+<li>使用libbpf&#x2F;BPF CO-RE，不需要包含内核头文件（即，所有这些 #include &lt;linux&#x2F;whatever.h&gt;）， 而是包含一个 vmlinux.h和几个libbpf帮助头文件。<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;vmlinux.h&quot;</span>               <span class="comment">/* all kernel types */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bpf/bpf_helpers.h&gt;</span>       <span class="comment">/* most used helpers: SEC, __always_inline, etc */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bpf/bpf_core_read.h&gt;</span>     <span class="comment">/* for BPF CO-RE helpers */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bpf/bpf_tracing.h&gt;</span>       <span class="comment">/* for getting kprobe arguments */</span></span></span><br></pre></td></tr></table></figure></li>
+<li>BCC和libbpf以声明方式定义map的方式有所不同，libbpf以struct结构体的形式定义map数据，并需要明确指定大小。</li>
+<li>常见libbpf命名规范：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tp/&lt;category&gt;/&lt;name&gt; 用于 tracepoints；</span><br><span class="line">kprobe/&lt;func_name&gt; 用于 kprobe 和 kretprobe/&lt;func_name&gt; 用于 kretprobe；</span><br><span class="line">raw_tp/&lt;name&gt; 用于原始 tracepoint；</span><br><span class="line">cgroup_skb/ingress 、cgroup_skb/egress 和整个系列的 cgroup/&lt;subtype&gt; 程序。</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="三、BPF-ring-buffer-和-BPF-perf-buffer"><a href="#三、BPF-ring-buffer-和-BPF-perf-buffer" class="headerlink" title="三、BPF ring buffer 和 BPF perf buffer"></a>三、BPF ring buffer 和 BPF perf buffer</h2><ul>
+<li>Perf Buffer是每个CPU缓冲区的集合，允许内核和用户空间之间高效地交换数据，但由于perfbuf是基于CPU的设计，存在内存使用效率低和事件重新排序的缺点。</li>
+<li>从Linux 5.8开始，BPF提供了ring buffer，是一个多生产者单消费者队列，可以同时在多个CPU之间安全地共享，解决了perfbuf内存开销和数据排序的问题。<br><br>以下分析针对<a target="_blank" rel="noopener" href="https://www.ebpf.top/post/bpf_ring_buffer/">博客文章——BPF 环形缓冲区</a>中开源的例子：<br></li>
+</ul>
+<h3 id="3-1-perf-buffer"><a href="#3-1-perf-buffer" class="headerlink" title="3.1 perf buffer"></a>3.1 perf buffer</h3><ul>
+<li>1、定义事件的数据结构，此数据结构用于BPF程序发送的数据，同时用于程序的用户空间部分使用。</li>
+<li>2、定义BPF perfbuf为BPF_MAP_TYPE_PERF_EVENT_ARRAY映射。</li>
+<li>3、BPF程序：附加到跟踪点上，为样本获取一个临时存储，并用跟踪点上下文中的数据填充它。完成后，它将通过调用bpf_perf_event_output()发送样本到BPF perfbuf。该API会在当前CPU的perf缓冲区中为数据结构event预留空间，将数据复制到该预留空间，完成后将向用户空间发出新数据可用的信号。此时，epoll子系统将唤醒用户空间处理程序，并将指针传递到该数据副本进行处理。</li>
+<li>4、用户空间部分：使用libbpf用户空间的perf_buffer__new() API创建一个perf缓冲区使用实例，对于提交样本libbpf将调用handle_event()回调，该回调仅调用printf()打印数据。</li>
+</ul>
+<h3 id="3-2-ring-buffer"><a href="#3-2-ring-buffer" class="headerlink" title="3.2 ring buffer"></a>3.2 ring buffer</h3><ul>
+<li>1、BPF程序的区别：bpf_perf_event_output()类似于bpf_ringbuf_output()，是bpf_ringbuf_output()的替代，唯一的区别是ringbuf API不需要引用BPF程序上下文。此外，BPF ringbuf 映射定义略有不同。</li>
+<li>2、用户空间代码：更简单的ring_buffer__new() API，ring_buffer__poll() 替换 perf_buffer__poll().</li>
+<li>3、首选reserve&#x2F;commit API，相比bpf_ringbuf_output()，消除了额外的内存复制和临时存储空间的需求。</li>
+</ul>
+<h2 id="四、开发过程中遇到的一些问题"><a href="#四、开发过程中遇到的一些问题" class="headerlink" title="四、开发过程中遇到的一些问题"></a>四、开发过程中遇到的一些问题</h2><h3 id="4-1-vmlinux头文件中类型重定义错误"><a href="#4-1-vmlinux头文件中类型重定义错误" class="headerlink" title="4.1 vmlinux头文件中类型重定义错误"></a>4.1 vmlinux头文件中类型重定义错误</h3><ul>
+<li>问题描述：<br><img src="/assets/blog/eBPF3-1.jpg" alt="Alt text"><br><center>报错截图</center></li>
+<li>解决方案：vmlinux.h和bpf.h冲突，删除bpf.h include。</li>
+</ul>
+<h3 id="4-2-如何在BPF程序中按照PID过滤"><a href="#4-2-如何在BPF程序中按照PID过滤" class="headerlink" title="4.2 如何在BPF程序中按照PID过滤"></a>4.2 如何在BPF程序中按照PID过滤</h3><ul>
+<li>问题分析：PID是进程标识符，按照PID过滤则需要了解进程在内核空间的结构。</li>
+<li>Linux进程：<br>在Linux系统中进程在内核空间一般用任务&#x2F;Task来表示，内核中对应的结构为task_struct。<br><br>用户创建的线程在Linux内核中也会对等创建一个task_struct结构，属于同一个进程的多个线程对应的task_struct结构在底层实现了进程级别资源的共享，比如内存、信号量、文件等。<br></li>
+<li>进程pid的过滤：bpf_get_current_pid_tgid() &gt;&gt; 32，高32位置为tgid，低32位为 pid(tid)。</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://davidlovezoe.club/wordpress/archives/1044">博客文章——BPF数据传递的桥梁——BPF MAP</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ebpf.top/post/bcc-to-libbpf-guid/">BCC 到 libbpf 的转换指南【译】</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ebpf.top/post/ebpf_prog_pid_filter/">博客文章——如何在 BPF 程序中正确地按照 PID 过滤？</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ebpf.top/post/bpf_ring_buffer/">博客文章——BPF 环形缓冲区</a></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,7 +237,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -202,17 +250,133 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://xiaoxiaoguaixiashi.github.io.git/2023/01/18/eBPF-3-md/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2022/10/19/eBPF-2-md/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">eBPF编程入门</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81BPF-Map"><span class="toc-number">1.</span> <span class="toc-text">一、BPF Map</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81BCC%E5%88%B0libbpf%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-number">2.</span> <span class="toc-text">二、BCC到libbpf的转换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Elibbpf%E7%9A%84%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 构建基于libbpf的应用程序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%BD%BF%E7%94%A8libbpf%E5%92%8CBCC%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 使用libbpf和BCC的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81BPF-ring-buffer-%E5%92%8C-BPF-perf-buffer"><span class="toc-number">3.</span> <span class="toc-text">三、BPF ring buffer 和 BPF perf buffer</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-perf-buffer"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 perf buffer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-ring-buffer"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 ring buffer</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">四、开发过程中遇到的一些问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-vmlinux%E5%A4%B4%E6%96%87%E4%BB%B6%E4%B8%AD%E7%B1%BB%E5%9E%8B%E9%87%8D%E5%AE%9A%E4%B9%89%E9%94%99%E8%AF%AF"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 vmlinux头文件中类型重定义错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%A6%82%E4%BD%95%E5%9C%A8BPF%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%8C%89%E7%85%A7PID%E8%BF%87%E6%BB%A4"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 如何在BPF程序中按照PID过滤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">5.</span> <span class="toc-text">参考链接</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+    <section id="comments">
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'xiaoxiaoguai'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </section>
+  
+
+  
 
 
           </div>
@@ -235,8 +399,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
