@@ -6,17 +6,25 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://XiaoXiaoGuaiXiaShi.github.io.git">
-  <title>Archives | DQQ&#39;s blog</title>
+  <title>Linux内核函数分析 | DQQ&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="There is more to come.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="DQQ&#39;s blog">
-<meta property="og:url" content="https://xiaoxiaoguaixiashi.github.io.git/archives/index.html">
+  <meta name="description" content="本篇介绍了Linux内核源码的结构组成，并进一步分析了容器源码，介绍了Linux中与容器相关的capabilities机制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux内核函数分析">
+<meta property="og:url" content="https://xiaoxiaoguaixiashi.github.io.git/2023/02/28/Linux-function-md/index.html">
 <meta property="og:site_name" content="DQQ&#39;s blog">
-<meta property="og:description" content="There is more to come.">
+<meta property="og:description" content="本篇介绍了Linux内核源码的结构组成，并进一步分析了容器源码，介绍了Linux中与容器相关的capabilities机制。">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/Linux-function-1.jpg">
+<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/Linux-function-2.jpg">
+<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/Linux-function-3.jpg">
+<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/Linux-function-4.jpg">
+<meta property="article:published_time" content="2023-02-28T14:28:22.000Z">
+<meta property="article:modified_time" content="2023-03-06T13:46:12.929Z">
 <meta property="article:author" content="DQQ">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/Linux-function-1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="DQQ&#39;s blog" type="application/atom+xml">
   
@@ -148,36 +156,108 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Linux-function-md" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/02/28/Linux-function-md/" class="archive-article-date">
-  	<time datetime="2023-02-28T14:28:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-02-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/02/28/Linux-function-md/">Linux内核函数分析</a>
+    <h1 class="article-title" itemprop="name">
+      Linux内核函数分析
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2023/02/28/Linux-function-md/" class="archive-article-date">
+  	<time datetime="2023-02-28T14:28:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-02-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本篇介绍了Linux内核源码的结构组成，并进一步分析了容器源码，介绍了Linux中与容器相关的capabilities机制。</p>
+<span id="more"></span>
+
+<h1 id="一-Linux内核源码整体组成"><a href="#一-Linux内核源码整体组成" class="headerlink" title="一 Linux内核源码整体组成"></a>一 Linux内核源码整体组成</h1><ul>
+<li>现代操作系统一般由进程管理、内存管理、文件系统、驱动程序、网络等组成，Linux内核源码下的各个目录大致对应了这些部分。</li>
+<li>ll &#x2F;usr&#x2F;src&#x2F;linux<blockquote>
+<ul>
+<li>arch：包含了支持的硬件体系结构相关的核心代码。</li>
+<li>block：存储了块设备驱动的相关代码。</li>
+<li>certs：存储了认证和签名的相关代码。</li>
+<li>crypto：存储了内核中常用的加密、压缩等算法的相关代码。</li>
+<li>documentation：内核中常用的协议规范、功能模块等。</li>
+<li>drivers：包含系统中所有的设备驱动，如显卡驱动程序等。</li>
+<li>fs：fs目录中存储了虚拟文件系统相关代码，每个逻辑文件系统在fs下都有对应的目录，如ext2等。</li>
+<li>include：包括了核心的大多数include文件，对于每种支持的体系结构分别有一个子目录。</li>
+<li>init：包含核心启动代码，该初始化代码关联到了内核的各个组件的入口。</li>
+<li>ipc：包含了核心的进程间通讯代码，如信号量、共享内存等。</li>
+<li>io_uring：新的异步IO框架。</li>
+<li>kernel：主要核心代码，包含了进程管理、IRQ中断等模块。</li>
+<li>lib：包含了核心的库代码，存储了C语言标准库的子集相关代码。</li>
+<li>mm：包含了所有的内存管理代码，与具体硬件体系结构相关的内存管理代码位于arch&#x2F;*&#x2F;mm目录。</li>
+<li>net：核心的网络部分代码，每个子目录对应于网络的一个方面。</li>
+<li>samples： 存储了Linux内核参考示例代码。</li>
+<li>scripts：包含用于配置核心的脚本文件。</li>
+<li>security：存储了Linux内核安全模型相关代码。</li>
+<li>sound：存储了声卡驱动相关代码。</li>
+<li>tools：存储了与Linux内核交互相关代码。</li>
+<li>usr：存储了用户打包和内核压缩相关代码。</li>
+<li>virt：存储了kvm虚拟化目录相关实现的代码。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<h1 id="二-Linux中与容器相关的函数调用"><a href="#二-Linux中与容器相关的函数调用" class="headerlink" title="二 Linux中与容器相关的函数调用"></a>二 Linux中与容器相关的函数调用</h1><h2 id="2-1-docker容器源码分析"><a href="#2-1-docker容器源码分析" class="headerlink" title="2.1 docker容器源码分析"></a>2.1 docker容器源码分析</h2><p>容器引擎–&gt;containerd High-level 运行时–&gt;runc Low-level 容器运行时。</p>
+<ul>
+<li>1、首先分析容器引擎moby源码：从moby&#x2F;daemon&#x2F;create.go源码中可知，daemon端先进行container create（调用ContainerCreate进一步创建容器——&gt;daemon.create(params, managed)——&gt;daemon.newContainer()），然后对container start进行处理（r.postContainersCreate()——&gt;ContainerStart()——&gt;daemon.containerStart()——&gt;daemon.containerd.Create()——&gt;container.start()），接下里的内容就交给了docker-containerd继续处理。</li>
+<li>2、然后分析容器运行时containerd代码：Container.NewTask——&gt;TaskService()——&gt;Runtime TaskManager Create——&gt;runc.create()。</li>
+<li>3、runc create –&gt; runc init –&gt; runc start，三者关系时序图如下。其中，runc create为runc init做准备工作，runc init很少被直接使用，而是被runc create隐式地调用。<br><img src="/assets/blog/Linux-function-1.jpg" alt="Alt text"><br><center>图来自(参考链接“runc源码分析”)</center></li>
+</ul>
+<p>runc&#x2F;create.go——&gt;runc&#x2F;utils_linux.go中的startContainer——&gt;createContainer——&gt;CreateLibcontainerConfig——&gt;CreateCgroupConfig（创建cgroup资源控制的配置, 传入默认分区, 返回cgroup资源配置）——&gt;runc&#x2F;libcontainer&#x2F;process_linux.go initProcess.start中通知init 进程，设置新的cgroup namespace，执行nsexec进程。</p>
+<ul>
+<li>4、runc经过多次自身调用，历经新旧namespace创建和切换，最后执行entrypoint替换掉runc自身进程。<br><img src="/assets/blog/Linux-function-2.jpg" alt="Alt text"><br><center>跟namespace相关的三个函数：clone()、setns（）、unshare()</center></li>
+</ul>
+<h2 id="2-2-sysdig实现docker跟踪"><a href="#2-2-sysdig实现docker跟踪" class="headerlink" title="2.2 sysdig实现docker跟踪"></a>2.2 sysdig实现docker跟踪</h2><p><img src="/assets/blog/Linux-function-3.jpg" alt="Alt text"><br></p>
+<center>sysdig架构</center>
+
+<h2 id="2-3-capabilities检查容器权限"><a href="#2-3-capabilities检查容器权限" class="headerlink" title="2.3 capabilities检查容器权限"></a>2.3 capabilities检查容器权限</h2><h3 id="2-3-1-capabilities相关概念"><a href="#2-3-1-capabilities相关概念" class="headerlink" title="2.3.1 capabilities相关概念"></a>2.3.1 capabilities相关概念</h3><p>capabilities可以应用于文件和进程（或线程，Linux 内核不区分进程和线程），文件的capabilities存储在文件的扩展属性中，扩展属性在构建镜像时会被清理掉，所以在容器中基本不需要考虑文件的capabilities。<br><br>进程的capabilities通过每个进程单独维护的5个capability集合来控制，每个集合中都包含0个或多个capabilities：</p>
+<ul>
+<li>Permitted：进程所能够使用的capabilities的超集；</li>
+<li>Inheritable：进程在执行exec() 统调用时，能够被新的派生进程所继承的capabilities；</li>
+<li>Effective：内核对进程执行权限检查时所使用的集合；</li>
+<li>Bounding：Inheritable 集合的超集，一个capability 必须在 Bounding 集合中才能添加到Inheritable；</li>
+<li>Ambient：非特权程序执行exec()系统调用时将保留的 capabilities。<br>如内核代码<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.18/source/include/linux/cred.h#L110%E4%B8%AD%E6%89%80%E7%A4%BA%EF%BC%9A">https://elixir.bootlin.com/linux/v5.18/source/include/linux/cred.h#L110中所示：</a><br><img src="/assets/blog/Linux-function-4.jpg" alt="Alt text"><br><center>进程结构体中的capability集合</center></li>
+</ul>
+<h3 id="2-3-2-权限检查"><a href="#2-3-2-权限检查" class="headerlink" title="2.3.2 权限检查"></a>2.3.2 权限检查</h3><ul>
+<li>引入capabilities后，权限检查的过程就变成了：在执行特权操作时，如果进程的有效身份不是root，就去检查是否具有该特权操作所对应的capabilites，并以此决定是否可以进行该特权操作。比如要向进程发送信号(kill())，就得具有capability CAP_KILL；如果设置系统时间，就得具有capability CAP_SYS_TIME。</li>
+<li>capabilities列表见<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man7/capabilities.7.html%E3%80%82">https://man7.org/linux/man-pages/man7/capabilities.7.html。</a></li>
+</ul>
+<h3 id="2-3-3-获取和设置capabilities"><a href="#2-3-3-获取和设置capabilities" class="headerlink" title="2.3.3 获取和设置capabilities"></a>2.3.3 获取和设置capabilities</h3><ul>
+<li>系统调用capget(2)和capset(2)，可被用于获取和设置线程自身的capabilities。</li>
+<li>此外，也可以使用libcap中提供的接口cap_get_proc(3)和cap_set_proc(3)。</li>
+<li>如果要查看线程的capabilities，可以通过&#x2F;proc&#x2F;<PID>&#x2F;task&#x2F;<TID>&#x2F;status文件，三种集合分别对应于CapPrm, CapInh和CapEff。但这种的显示结果是数值，不适合阅读。为此，可使用包libcap中的命令getpcaps <PID>获取该进程的主线程的capabilities。</li>
+<li>类似的，如果要查看和设置文件的capabilities，可以使用命令getcap或者setcap。</li>
+<li>Linux源码中对capabilities权限检查的实现在kernel&#x2F;capability.c中。</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/375238002">博客文章——Linux内核源代码查看及分析方法</a></li>
+<li><a target="_blank" rel="noopener" href="https://guanjunjian.github.io/2017/09/28/study-4-docker-4-postContainersCreate/">博客文章——Docker源码分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6903527508784873485">博客文章——runc源码分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://toutiao.io/posts/9t5ta44/preview">博客文章——runc源码分析2</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv19784745?from=search">博客文章——深究Runc源码-3-Init流程分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://waynerv.com/posts/container-fundamentals-permission-control-using-capabilities/">博客文章——容器技术原理(四)：使用 Capabilities 实现权限控制</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ctfiot.com/91844.html">博客文章——Linux Capabilities利用总结</a></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,7 +269,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -202,400 +282,133 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://xiaoxiaoguaixiashi.github.io.git/2023/02/28/Linux-function-md/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2023/01/18/eBPF-3-md/" class="archive-article-date">
-  	<time datetime="2023-01-18T07:45:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-01-18</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2023/01/18/eBPF-3-md/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">eBPF编程实战</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/01/18/eBPF-3-md/">eBPF编程实战</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eBPF</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80-Linux%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E6%95%B4%E4%BD%93%E7%BB%84%E6%88%90"><span class="toc-number">1.</span> <span class="toc-text">一 Linux内核源码整体组成</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C-Linux%E4%B8%AD%E4%B8%8E%E5%AE%B9%E5%99%A8%E7%9B%B8%E5%85%B3%E7%9A%84%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">二 Linux中与容器相关的函数调用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-docker%E5%AE%B9%E5%99%A8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 docker容器源码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-sysdig%E5%AE%9E%E7%8E%B0docker%E8%B7%9F%E8%B8%AA"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 sysdig实现docker跟踪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-capabilities%E6%A3%80%E6%9F%A5%E5%AE%B9%E5%99%A8%E6%9D%83%E9%99%90"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 capabilities检查容器权限</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-1-capabilities%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-number">2.3.1.</span> <span class="toc-text">2.3.1 capabilities相关概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-2-%E6%9D%83%E9%99%90%E6%A3%80%E6%9F%A5"><span class="toc-number">2.3.2.</span> <span class="toc-text">2.3.2 权限检查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-3-%E8%8E%B7%E5%8F%96%E5%92%8C%E8%AE%BE%E7%BD%AEcapabilities"><span class="toc-number">2.3.3.</span> <span class="toc-text">2.3.3 获取和设置capabilities</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">2.4.</span> <span class="toc-text">参考链接</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2022" class="archive-year">2022</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2022/10/19/eBPF-2-md/" class="archive-article-date">
-  	<time datetime="2022-10-19T01:51:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-10-19</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/10/19/eBPF-2-md/">eBPF编程入门</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eBPF</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2022/08/28/eBPF/" class="archive-article-date">
-  	<time datetime="2022-08-28T12:37:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-08-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2022/08/28/eBPF/">eBPF初步学习</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eBPF</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/09/10/life-1-md/" class="archive-article-date">
-  	<time datetime="2019-09-10T09:00:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-10</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/09/10/life-1-md/">新的学期，新的生活</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">feeling</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/life//" class="article-tag-list-link color5">life</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/03/22/cve-2017-16995/" class="archive-article-date">
-  	<time datetime="2018-03-22T12:37:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/03/22/cve-2017-16995/">Ubuntu16.04.4 本地提权漏洞（CVE-2017-16995）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CVE</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-      
-        </div></section>
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/12/28/weixin/" class="archive-article-date">
-  	<time datetime="2017-12-28T12:37:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/12/28/weixin/">微信是怎样发送消息的</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">course</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/12/11/AWD-1/" class="archive-article-date">
-  	<time datetime="2017-12-11T06:25:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-11</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/12/11/AWD-1/">记第一次线下赛</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">feeling</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/life//" class="article-tag-list-link color5">life</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
 
-    
+  
+
+  
+    <section id="comments">
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'xiaoxiaoguai'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </section>
+  
+
+  
 
 
           </div>
@@ -618,8 +431,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
