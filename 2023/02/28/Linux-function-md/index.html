@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/Linux-function-3.jpg">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/Linux-function-4.jpg">
 <meta property="article:published_time" content="2023-02-28T14:28:22.000Z">
-<meta property="article:modified_time" content="2023-03-06T13:46:12.929Z">
+<meta property="article:modified_time" content="2023-03-06T13:55:59.397Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
@@ -222,7 +222,7 @@
 <h2 id="2-2-sysdig实现docker跟踪"><a href="#2-2-sysdig实现docker跟踪" class="headerlink" title="2.2 sysdig实现docker跟踪"></a>2.2 sysdig实现docker跟踪</h2><p><img src="/assets/blog/Linux-function-3.jpg" alt="Alt text"><br></p>
 <center>sysdig架构</center>
 
-<h2 id="2-3-capabilities检查容器权限"><a href="#2-3-capabilities检查容器权限" class="headerlink" title="2.3 capabilities检查容器权限"></a>2.3 capabilities检查容器权限</h2><h3 id="2-3-1-capabilities相关概念"><a href="#2-3-1-capabilities相关概念" class="headerlink" title="2.3.1 capabilities相关概念"></a>2.3.1 capabilities相关概念</h3><p>capabilities可以应用于文件和进程（或线程，Linux 内核不区分进程和线程），文件的capabilities存储在文件的扩展属性中，扩展属性在构建镜像时会被清理掉，所以在容器中基本不需要考虑文件的capabilities。<br><br>进程的capabilities通过每个进程单独维护的5个capability集合来控制，每个集合中都包含0个或多个capabilities：</p>
+<h2 id="2-3-capabilities检查容器权限"><a href="#2-3-capabilities检查容器权限" class="headerlink" title="2.3 capabilities检查容器权限"></a>2.3 capabilities检查容器权限</h2><h3 id="2-3-1-capabilities相关概念"><a href="#2-3-1-capabilities相关概念" class="headerlink" title="2.3.1 capabilities相关概念"></a>2.3.1 capabilities相关概念</h3><p>capabilities可以应用于文件和进程（或线程，Linux 内核不区分进程和线程），文件的capabilities存储在文件的扩展属性中，扩展属性在构建镜像时会被清理掉，所以在容器中基本不需要考虑文件的capabilities。<br>进程的capabilities通过每个进程单独维护的5个capability集合来控制，每个集合中都包含0个或多个capabilities：</p>
 <ul>
 <li>Permitted：进程所能够使用的capabilities的超集；</li>
 <li>Inheritable：进程在执行exec() 统调用时，能够被新的派生进程所继承的capabilities；</li>
@@ -343,6 +343,15 @@
 
   
 <nav id="article-nav">
+  
+    <a href="/2023/03/07/CVE-2022-23648/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          CVE-2022-23648分析复现
+        
+      </div>
+    </a>
   
   
     <a href="/2023/01/18/eBPF-3-md/" id="article-nav-older" class="article-nav-link-wrap">
