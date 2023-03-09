@@ -150,6 +150,96 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-eBPF-4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2023/03/09/eBPF-4/">eBPF helper函数</a>
+    </h1>
+  
+
+        
+        <a href="/2023/03/09/eBPF-4/" class="archive-article-date">
+  	<time datetime="2023-03-09T11:44:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-03-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>内核提供了一些约定和帮助函数，用于生成和使用BPF映射。由于内核程序需要从bpf&#x2F;bpf_helper.h文件加载函数，而用户空间程序则需要从lib&#x2F;bpf&#x2F;bpf.h文件加载，所以内核程序访问的函数签名与用户空间访问的函数签名并不相同，具体表现在：</p>
+<ul>
+<li>内核程序可以直接访问map，而用户空间程序需要使用文件描述符fd来引用map。</li>
+<li>内核程序和用户空间程序调用函数的行为也不同。<br>本篇介绍了eBPF编程中常使用的helper函数，并分别说明了其在用户态和内核态的用法。
+        
+          <a class="article-more-a" href="/2023/03/09/eBPF-4/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eBPF</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2023/03/09/eBPF-4/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-CVE-2022-23648" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
