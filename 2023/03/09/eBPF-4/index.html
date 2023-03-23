@@ -16,7 +16,7 @@
 <meta property="og:description" content="内核提供了一些约定和帮助函数，用于生成和使用BPF映射。由于内核程序需要从bpf&#x2F;bpf_helper.h文件加载函数，而用户空间程序则需要从lib&#x2F;bpf&#x2F;bpf.h文件加载，所以内核程序访问的函数签名与用户空间访问的函数签名并不相同，具体表现在：  内核程序可以直接访问map，而用户空间程序需要使用文件描述符fd来引用map。 内核程序和用户空间程序调用函数的行为">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-03-09T11:44:11.000Z">
-<meta property="article:modified_time" content="2023-03-09T12:21:51.707Z">
+<meta property="article:modified_time" content="2023-03-13T06:33:20.668Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="eBPF">
 <meta name="twitter:card" content="summary">
@@ -176,7 +176,7 @@
 <li>内核程序可以直接访问map，而用户空间程序需要使用文件描述符fd来引用map。</li>
 <li>内核程序和用户空间程序调用函数的行为也不同。<br>本篇介绍了eBPF编程中常使用的helper函数，并分别说明了其在用户态和内核态的用法。<span id="more"></span></li>
 </ul>
-<h2 id="一-eBPF-map相关"><a href="#一-eBPF-map相关" class="headerlink" title="一 eBPF map相关"></a>一 eBPF map相关</h2><h2 id="1、更新BPF-map元素——bpf-map-update-elem"><a href="#1、更新BPF-map元素——bpf-map-update-elem" class="headerlink" title="1、更新BPF map元素——bpf_map_update_elem()"></a>1、更新BPF map元素——bpf_map_update_elem()</h2><ul>
+<h2 id="一-eBPF-map相关"><a href="#一-eBPF-map相关" class="headerlink" title="一 eBPF map相关"></a>一 eBPF map相关</h2><h3 id="1、更新BPF-map元素——bpf-map-update-elem"><a href="#1、更新BPF-map元素——bpf-map-update-elem" class="headerlink" title="1、更新BPF map元素——bpf_map_update_elem()"></a>1、更新BPF map元素——bpf_map_update_elem()</h3><ul>
 <li><strong>内核程序</strong>：long bpf_map_update_elem(struct bpf_map *map, const void *key, const void *value, u64 flags)更新指定key的值， flags参数用于控制更新行为。</li>
 </ul>
 <blockquote>
@@ -186,9 +186,9 @@
 <ul>
 <li><strong>用户态程序</strong>：int bpf_map_update_elem(int fd, const void *key, const void *value,__u64 flags)<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">err = bpf_map__update_elem(fd, &amp;key, &amp;value, BPF_ANY);</span><br></pre></td></tr></table></figure></li>
 </ul>
-<h2 id="2、读取-x2F-查找BPF-map元素——bpf-map-lookup-elem"><a href="#2、读取-x2F-查找BPF-map元素——bpf-map-lookup-elem" class="headerlink" title="2、读取&#x2F;查找BPF map元素——bpf_map_lookup_elem()"></a>2、读取&#x2F;查找BPF map元素——bpf_map_lookup_elem()</h2><ul>
+<h3 id="2、读取-x2F-查找BPF-map元素——bpf-map-lookup-elem"><a href="#2、读取-x2F-查找BPF-map元素——bpf-map-lookup-elem" class="headerlink" title="2、读取&#x2F;查找BPF map元素——bpf_map_lookup_elem()"></a>2、读取&#x2F;查找BPF map元素——bpf_map_lookup_elem()</h3><ul>
 <li><strong>内核程序</strong>：void *bpf_map_lookup_elem(struct bpf_map *map, const void *key)<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v = bpf_map_lookup_elem(&amp;execve_counter, &amp;key);</span><br></pre></td></tr></table></figure></li>
-<li><strong>用户态程序</strong>：int bpf_map_lookup_elem(int fd, const void *key, void *value)<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result = bpf_map__lookup_elem(fd, &amp;key, &amp;value);</span><br></pre></td></tr></table></figure></li>
+<li><strong>用户态程序</strong>：int bpf_map_lookup_elem(int fd, const void *key, void *value)<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 建立 map</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">bpf_map</span> *<span class="title">map</span> =</span> bpf_object__find_map_by_name(obj, <span class="string">&quot;data&quot;</span>);</span><br><span class="line"><span class="type">int</span> key = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> val = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">map</span>) </span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (bpf_map__lookup_elem(<span class="built_in">map</span>, &amp;key, <span class="keyword">sizeof</span>(key), &amp;val, <span class="keyword">sizeof</span>(val), <span class="number">0</span>) != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">&quot;val:%d\n&quot;</span>, val);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://www.edony.ink/deepinsight-of-ebpf-map/">深入了解ebpf map</a></li>
@@ -287,9 +287,18 @@
   
 <nav id="article-nav">
   
+    <a href="/2023/03/16/cgroupV/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          cgroupV
+        
+      </div>
+    </a>
   
-    <a href="/2023/03/07/CVE-2022-23648/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">CVE-2022-23648分析复现</div>
+  
+    <a href="/2023/03/07/Docker-CVE/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Docker相关CVE分析复现</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -316,7 +325,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-eBPF-map%E7%9B%B8%E5%85%B3"><span class="toc-number">1.</span> <span class="toc-text">一 eBPF map相关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%9B%B4%E6%96%B0BPF-map%E5%85%83%E7%B4%A0%E2%80%94%E2%80%94bpf-map-update-elem"><span class="toc-number">2.</span> <span class="toc-text">1、更新BPF map元素——bpf_map_update_elem()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E8%AF%BB%E5%8F%96-x2F-%E6%9F%A5%E6%89%BEBPF-map%E5%85%83%E7%B4%A0%E2%80%94%E2%80%94bpf-map-lookup-elem"><span class="toc-number">3.</span> <span class="toc-text">2、读取&#x2F;查找BPF map元素——bpf_map_lookup_elem()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">参考链接</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-eBPF-map%E7%9B%B8%E5%85%B3"><span class="toc-number">1.</span> <span class="toc-text">一 eBPF map相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E6%9B%B4%E6%96%B0BPF-map%E5%85%83%E7%B4%A0%E2%80%94%E2%80%94bpf-map-update-elem"><span class="toc-number">1.1.</span> <span class="toc-text">1、更新BPF map元素——bpf_map_update_elem()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%E3%80%81%E8%AF%BB%E5%8F%96-x2F-%E6%9F%A5%E6%89%BEBPF-map%E5%85%83%E7%B4%A0%E2%80%94%E2%80%94bpf-map-lookup-elem"><span class="toc-number">1.2.</span> <span class="toc-text">2、读取&#x2F;查找BPF map元素——bpf_map_lookup_elem()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-number">2.</span> <span class="toc-text">参考链接</span></a></li></ol>
                     </div>
                 </span>
             </div>
