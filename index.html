@@ -150,162 +150,6 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-cgroupV" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2023/03/16/cgroupV/">cgroupV</a>
-    </h1>
-  
-
-        
-        <a href="/2023/03/16/cgroupV/" class="archive-article-date">
-  	<time datetime="2023-03-16T03:03:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-03-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>cgroup v1和v2的区别：<a target="_blank" rel="noopener" href="https://blog.csdn.net/fly910905/article/details/123718418">https://blog.csdn.net/fly910905/article/details/123718418</a></p>
-<p>docker配置cgroupv2:<a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/780825">https://developer.aliyun.com/article/780825</a></p>
-<p>v2详解：<a target="_blank" rel="noopener" href="https://zorrozou.github.io/docs/%E8%AF%A6%E8%A7%A3Cgroup%20V2.html">https://zorrozou.github.io/docs/%E8%AF%A6%E8%A7%A3Cgroup%20V2.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/haoee/p/16209800.html">https://www.cnblogs.com/haoee/p/16209800.html</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2023/03/16/cgroupV/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-eBPF-4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2023/03/09/eBPF-4/">eBPF helper函数</a>
-    </h1>
-  
-
-        
-        <a href="/2023/03/09/eBPF-4/" class="archive-article-date">
-  	<time datetime="2023-03-09T11:44:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-03-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>内核提供了一些约定和帮助函数，用于生成和使用BPF映射。由于内核程序需要从bpf&#x2F;bpf_helper.h文件加载函数，而用户空间程序则需要从lib&#x2F;bpf&#x2F;bpf.h文件加载，所以内核程序访问的函数签名与用户空间访问的函数签名并不相同，具体表现在：</p>
-<ul>
-<li>内核程序可以直接访问map，而用户空间程序需要使用文件描述符fd来引用map。</li>
-<li>内核程序和用户空间程序调用函数的行为也不同。<br>本篇介绍了eBPF编程中常使用的helper函数，并分别说明了其在用户态和内核态的用法。
-        
-          <a class="article-more-a" href="/2023/03/09/eBPF-4/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eBPF</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2023/03/09/eBPF-4/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-Docker-CVE" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -480,180 +324,6 @@
 
 
   
-    <article id="post-eBPF-3-md" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2023/01/18/eBPF-3-md/">eBPF编程实战</a>
-    </h1>
-  
-
-        
-        <a href="/2023/01/18/eBPF-3-md/" class="archive-article-date">
-  	<time datetime="2023-01-18T07:45:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-01-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>上一篇文章中介绍了eBPF编程入门的基础内容和结构，本篇进一步分析了BPF技术中的重要数据结构。此外，过去许多BPF应用程序都是基于BCC实现的，但libbpf+BPF CO-RE的方式无疑更好上手。因此，本篇中也说明了由BCC转换到libbpf过程中需要注意的一些问题。</p>
-        
-          <a class="article-more-a" href="/2023/01/18/eBPF-3-md/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eBPF</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2023/01/18/eBPF-3-md/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-eBPF-2-md" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/10/19/eBPF-2-md/">eBPF编程入门</a>
-    </h1>
-  
-
-        
-        <a href="/2022/10/19/eBPF-2-md/" class="archive-article-date">
-  	<time datetime="2022-10-19T01:51:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-10-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>上一篇文章中介绍了eBPF初步学习的相关基础知识点，对eBPF开发环境还不太了解的可以先移步上一篇。本篇从libbpf-bootstrap下的minimal例子入手，学习libbpf的代码风格及eBPF编程中的一些规则和定义，并对基于eBPF实现的容器日志取证系统ProvBPF进行了复现分析。</p>
-        
-          <a class="article-more-a" href="/2022/10/19/eBPF-2-md/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">eBPF</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/study//" class="article-tag-list-link color1">study</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2022/10/19/eBPF-2-md/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-eBPF" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -661,7 +331,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2022/08/28/eBPF/">eBPF初步学习</a>
+      <a class="article-title" href="/2022/08/28/eBPF/">eBPF入门</a>
     </h1>
   
 
@@ -1003,10 +673,94 @@
 
 
   
+    <article id="post-AWD-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
-    </nav>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/11/AWD-1/">记第一次线下赛</a>
+    </h1>
+  
+
+        
+        <a href="/2017/12/11/AWD-1/" class="archive-article-date">
+  	<time datetime="2017-12-11T06:25:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天第一次打AWD比赛，全靠大佬carry，学到很多姿势（没错，包括腰酸脖子疼！），挺有意思的，稍微记录总结一下。</p>
+<h2 id="AWD"><a href="#AWD" class="headerlink" title="AWD"></a>AWD</h2><p>attack with defence赛制，也就是ctf线下赛。<br>比赛形式：一般就是一个ssh对应一个web服务，然后flag五分钟一轮，各队一般都有自己的初始分数，flag被拿会被拿走flag的队伍均分，主办方会对每个队伍的服务进行check，check不过就扣分，扣除的分值由服务check正常的队伍均分。</p>
+        
+          <a class="article-more-a" href="/2017/12/11/AWD-1/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">feeling</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/life//" class="article-tag-list-link color5">life</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/12/11/AWD-1/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
 
 
