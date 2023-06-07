@@ -1,3 +1,4 @@
+https://xiaoxiaoguaixiashi.github.io.git/2023/05/26/GNN/
 https://xiaoxiaoguaixiashi.github.io.git/2022/08/28/eBPF/
 https://xiaoxiaoguaixiashi.github.io.git/2023/02/28/Linux-function-md/
 https://xiaoxiaoguaixiashi.github.io.git/2019/09/10/life-1-md/
@@ -10,5 +11,6 @@ https://xiaoxiaoguaixiashi.github.io.git/tags/eBPF/
 https://xiaoxiaoguaixiashi.github.io.git/tags/course/
 https://xiaoxiaoguaixiashi.github.io.git/tags/feeling/
 https://xiaoxiaoguaixiashi.github.io.git/tags/Linux/
+https://xiaoxiaoguaixiashi.github.io.git/tags/AI/
 https://xiaoxiaoguaixiashi.github.io.git/categories/life/
 https://xiaoxiaoguaixiashi.github.io.git/categories/study/
