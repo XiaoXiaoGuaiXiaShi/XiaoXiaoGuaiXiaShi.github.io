@@ -17,7 +17,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/GNN-3.jpg">
 <meta property="article:published_time" content="2023-05-26T02:46:53.000Z">
-<meta property="article:modified_time" content="2023-06-08T01:21:51.582Z">
+<meta property="article:modified_time" content="2023-06-08T06:34:05.537Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="AI">
 <meta name="twitter:card" content="summary">
@@ -184,7 +184,7 @@
 <li><strong>邻接矩阵（Adjacency Matrix）</strong>：是一种最基础的图表示方式。假设一个图的节点数量为N，则生成一个N*N的矩阵，矩阵中的值为对应位置节点与节点之间的关系，该矩阵一般用A表示。有权图的邻接表与无权图的唯一区别就是将边的权重代替了原来1的位置。</li>
 </ul>
 <div align="center">
-<img /assets/blog/GNN-1.jpg width=50% />
+<img /assets/blog/GNN-1.jpg />
 <center>图截取自bilibli视频：邻接矩阵场景之有权图</center>
 </div>
 
@@ -192,7 +192,7 @@
 <li><strong>邻接列表</strong>：将一张图以矩阵的形式表示固然非常便于计算，但是对于稀疏的大图非常不友好。而邻接列表的表示方式对于稀疏大图则非常友好。（稀疏矩阵的常用存储格式有COO、CSR、CSC）</li>
 </ul>
 <div align="center">
-<img /assets/blog/GNN-2.jpg width=1048 height=553 />
+<img /assets/blog/GNN-2.jpg />
 <center>图截取自bilibli视频：有向无权图的邻接列表</center>
 </div>
 
@@ -241,7 +241,7 @@
 </ul>
 <h3 id="3-2-使用DGL创建同构图"><a href="#3-2-使用DGL创建同构图" class="headerlink" title="3.2 使用DGL创建同构图"></a>3.2 使用DGL创建同构图</h3><p>构建图如下：</p>
 <div align="center">
-<img /assets/blog/GNN-4.jpg width=1036 height=762 />
+<img /assets/blog/GNN-4.jpg />
 <center>图截取自YouTube视频：同构图实例</center>
 </div>
 
@@ -249,7 +249,7 @@
 
 <h3 id="3-3-使用DGL创建异构图"><a href="#3-3-使用DGL创建异构图" class="headerlink" title="3.3 使用DGL创建异构图"></a>3.3 使用DGL创建异构图</h3><p>构建图如下：</p>
 <div align="center">
-<img /assets/blog/GNN-5.jpg width=1046 height=778 />
+<img /assets/blog/GNN-5.jpg />
 <center>异构图实例：节点有三种类型：用户、电影、导演（不同颜色的圈圈代表不同类型的节点），边的类型包括：watches、directs。</center>
 </div>
 
