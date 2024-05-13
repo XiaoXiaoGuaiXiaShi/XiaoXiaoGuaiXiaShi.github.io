@@ -15,13 +15,13 @@
 <meta property="og:site_name" content="DQQ&#39;s blog">
 <meta property="og:description" content="Go语言是由谷歌公司在2007年开始开发的一门语言，目的是能在多核心时代高效编写网络应用程序。自2009年11月正式公开发布后，Go社区不断涌现出类似Docker、etcd、Consul等重量级的开源项目。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/go-1.pdf">
+<meta property="og:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/go-1.jpg">
 <meta property="article:published_time" content="2024-04-28T01:32:31.000Z">
-<meta property="article:modified_time" content="2024-05-13T01:30:30.754Z">
+<meta property="article:modified_time" content="2024-05-13T01:34:11.613Z">
 <meta property="article:author" content="DQQ">
 <meta property="article:tag" content="go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/go-1.pdf">
+<meta name="twitter:image" content="https://xiaoxiaoguaixiashi.github.io.git/assets/blog/go-1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="DQQ&#39;s blog" type="application/atom+xml">
   
@@ -204,7 +204,15 @@
 </ul>
 <h2 id="2-2-使用Go的工具"><a href="#2-2-使用Go的工具" class="headerlink" title="2.2 使用Go的工具"></a>2.2 使用Go的工具</h2><ul>
 <li>go工具提供了很多功能：如build和clean会执行编译和清理的工作。</li>
-<li>常用命令：</br><br>  go build：构建。go build 命令会读取 go.mod 中的依赖及版本信息，并在本地module缓存路径下找到对应版本的依赖module，执行编译和链接。 </br><br>  go run：会先构建后执行。 </br><br>  go vet：可以帮开发人员检测代码的常见错误。 </br><br>  go fmt：会自动格式化开发人员指定的源代码文件并保存。</br><br>  go doc：+包名，查看包的相关文档。</br><br>  go get：获取别人的包并将其安装到自己的GOPATH指定的目录。</br></li>
+<li>常用命令：<ul>
+<li>go build：构建。go build 命令会读取 go.mod 中的依赖及版本信息，并在本地module缓存路径下找到对应版本的依赖module，执行编译和链接。 </li>
+<li>go run：会先构建后执行。</li>
+<li>go vet：可以帮开发人员检测代码的常见错误。</li>
+<li>go fmt：会自动格式化开发人员指定的源代码文件并保存。</li>
+<li>go doc：+包名，查看包的相关文档。</li>
+<li>go get：获取别人的包并将其安装到自己的GOPATH指定的目录。</li>
+</ul>
+</li>
 </ul>
 <h2 id="2-3-go-mod"><a href="#2-3-go-mod" class="headerlink" title="2.3 go.mod"></a>2.3 go.mod</h2><ul>
 <li>Go.mod是Golang1.11版本新引入的官方包管理工具用于解决之前没有地方记录依赖包具体版本的问题，方便依赖包的管理。</li>
@@ -261,7 +269,7 @@
 <li>操作系统会在物理处理器上调度线程来运行，而Go语言的运行时会在逻辑处理器上调度goroutine来运行。每个逻辑处理器都分别绑定到单个操作系统线程。</li>
 <li>当goroutine执行了一个阻塞的系统调用（如打开一个文件）时，调度器会将这个线程与处理器分离，并创建一个新线程来运行这个处理器上提供的服务。</li>
 </ul>
-<p><img src="/assets/blog/go-1.pdf" alt="Alt text"><br></p>
+<p><img src="/assets/blog/go-1.jpg" alt="Alt text"><br></p>
 <h1 id="七、常用Go包"><a href="#七、常用Go包" class="headerlink" title="七、常用Go包"></a>七、常用Go包</h1><h2 id="4-1-urfave-x2F-cli"><a href="#4-1-urfave-x2F-cli" class="headerlink" title="4.1 urfave&#x2F;cli"></a>4.1 urfave&#x2F;cli</h2><ul>
 <li>作用：一个简单，快速构建基于命令行应用的工具包</li>
 <li>相关参数文档：<a target="_blank" rel="noopener" href="https://cli.urfave.org/v2/examples/arguments/">https://cli.urfave.org/v2/examples/arguments/</a></li>
